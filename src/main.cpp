@@ -2,7 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 
-//Code created by xiaolong(ç´¢é‡Œæ›¼ï¼‰, at 2:03AM 2024/3/6
+//Code created by xiaolong(索里曼), at 2:03AM 2024/3/6
 
 // Constants for screen dimensions and player attributes
 const int SCREEN_WIDTH = 1080;
@@ -34,9 +34,10 @@ struct Player {
     bool isJumping; // Flag for jump state
     bool isMovingLeft; // Flag for left movement
     bool isMovingRight; // Flag for right movement
+    int jumpCount;
 };
 
-//Code created by xiaolong(ç´¢é‡Œæ›¼ï¼‰, at 9ï¼š00pm 2024/3/8
+//Code created by xiaolong(索里曼), at 9:00pm 2024/3/8
 
 // Function to handle user input events
 void handleInput(Player& player) {
@@ -49,9 +50,11 @@ void handleInput(Player& player) {
             exit(0);
         }
         if (event.type == SDL_KEYDOWN) {
-            if (event.key.keysym.sym == SDLK_SPACE && !player.isJumping) {
+            if (event.key.keysym.sym == SDLK_SPACE && player.jumpCount < 2) {
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
+                player.jumpCount++;
+                printf("%d\n", player.jumpCount);
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
                 player.isMovingLeft = true;
@@ -71,7 +74,7 @@ void handleInput(Player& player) {
     }
 }
 
-//Code created and edited by xiaolong(ç´¢é‡Œæ›¼ï¼‰, at 11ï¼š00pm 2024/3/13
+//Code created and edited by xiaolong(索里曼), at 11:00pm 2024/3/13 & 2024/3/17
 
 // Function to update the player's position and state
 void updatePlayer(Player& player) {
@@ -97,10 +100,13 @@ void updatePlayer(Player& player) {
         player.dy = 0;
         player.isJumping = false;
     }
-    printf("%d\n", player.x);
+    if(player.y == SCREEN_HEIGHT - PLAYER_HEIGHT - 60)
+        {
+            player.jumpCount = 0;
+        }
 }
 
-//Code created by åˆ˜ç‚ç’‡ and èµµå—æ˜Ÿ, at 6:30pm 2024/3/10
+//Code created by 赵南星 and 刘珂璇, at 6:30pm 2024/3/10
 
 // Function to render the background scene
 void renderScene() {
@@ -112,13 +118,14 @@ void renderScene() {
 void renderPlayer(Player& player) {
     SDL_Rect rect = { player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT };
     //SDL_Rect srcRect = {cT * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT};
+    //Code created by xiaolong (索里曼) and Audrey (魏晓彤), at 8:00PM 2024/3/16
     SDL_Rect srcRect = {fT1 * 32, 3*32 , 32, 32};
     SDL_Rect srcRect2 = {fT2 * 32, 0, 32, 32};
     SDL_Rect srcRect3 = {fT3 * 32, 4 * 32, 32, 32};
     fT1 = (SDL_GetTicks()/ 200) % 8;
     fT2 = (SDL_GetTicks()/ 200) % 2;
     fT3 = (SDL_GetTicks()/ 200) % 6;
-    //printf("%d\n", cT);
+
     SDL_Texture* currentTexture = nullptr;
     SDL_RendererFlip flipType = SDL_FLIP_NONE;
 
@@ -126,7 +133,7 @@ void renderPlayer(Player& player) {
         // Animation frames for walking
         //int frame = (SDL_GetTicks() / 200) % 2; // Change every 200 ms
         if (player.isMovingLeft) {
-            SDL_RenderCopy(renderer, spriteSheet2, &srcRect, &rect);
+            SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect, &rect, 0, NULL, SDL_FLIP_HORIZONTAL);
             cT = 1;
         } else {
             SDL_RenderCopy(renderer, spriteSheet1, &srcRect, &rect);
@@ -152,7 +159,8 @@ void renderPlayer(Player& player) {
     //SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &rect, 0, NULL, flipType);
 }
 
-//Code created by xiaolong(ç´¢é‡Œæ›¼ï¼‰and é­æ™“å½¤, at 8:00PM 2024/3/6
+//Code created by xiaolong (索里曼) and Audrey (魏晓彤), at 8:00PM 2024/3/6
+//Code edited by xiaolong (索里曼) and Audrey (魏晓彤), at 8:00PM 2024/3/14 and 2024/3/16
 // Main function where the game loop runs
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -170,7 +178,7 @@ int main(int argc, char* argv[]) {
     spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
     spriteSheet2 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet2);
 
-    Player player = {100, 100, 0, 0, false}; // Initialize the player object
+    Player player = {100, 100, 0, 0, false, 0}; // Initialize the player object
 
     bool isRunning = true;
     while (isRunning) {
