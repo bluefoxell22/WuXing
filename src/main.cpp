@@ -5,8 +5,8 @@
 //Code created by xiaolong(索里曼), at 2:03AM 2024/3/6
 
 // Constants for screen dimensions and player attributes
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 700;
+const int WINDOW_WIDTH = 1080;
+const int WINDOW_HEIGHT = 700;
 const int PLAYER_WIDTH = 270;
 const int PLAYER_HEIGHT = 270;
 const int JUMP_FORCE = 20;
@@ -19,7 +19,7 @@ int playerDir = 2;
 int fT1;
 int fT2;
 int fT3;
-static int bending = 0;
+int bending = 0;
 
 // SDL variables for window, renderer, and textures
 SDL_Window* window = nullptr;
@@ -39,22 +39,30 @@ struct Player {
     int jumpCount;//amount of jumps done in succession in one instance
 };
 
-void bendingSkill(int bending, Player& player)
-{
+int bendingSkill(int& bending, Player& player) {
     static int initialX = player.x;
-    int totalX = initialX + 32*((SDL_GetTicks()/ 200) % 10);
-    printf("%d\n", totalX);
-    SDL_Rect srcRect4 = {((SDL_GetTicks()/ 200) % 10)*68, 0, 68, 9};
-    SDL_Rect dstrect2 ={totalX, player.y + 64, 272, 36};
-    if(totalX == 388)
-    {
+    int totalX = initialX;
+    SDL_Rect srcRect4 = { ((SDL_GetTicks() / 150) % 10) * 68, 0, 68, 9 };
+    totalX = initialX + ((playerDir == 2) ? 32 : -32) * ((SDL_GetTicks() / 150) % 10);
+    static int initialY = player.y;
+    SDL_Rect dstrect2 = { totalX, initialY, 272, 36 };
+    if (totalX >= initialX + 32 * 9 || totalX <= initialX - 32*9) {
         bending = 0;
-        //printf("fish\n");
+        return 0;
     }
-    if(bending != 0)
-    {
-        SDL_RenderCopy(renderer, fireSheet, &srcRect4, &dstrect2); 
+    if (bending != 0) {
+        if(playerDir == 2){
+            SDL_RenderCopyEx(renderer, fireSheet, &srcRect4, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
+        }
+        else
+        {
+            SDL_RenderCopy(renderer, fireSheet, &srcRect4, &dstrect2);
+        }
     }
+    else {
+        initialX = player.x; // Reset initialX when bending is finished
+    }
+    return 0;
 }
 
 //Code created by xiaolong(索里曼), at 9:00pm 2024/3/8
@@ -81,6 +89,10 @@ void handleInput(Player& player) {
             if (event.key.keysym.sym == SDLK_RIGHT) {
                 player.isMovingRight = true;
             }
+            if(event.key.keysym.sym == SDLK_e){
+                bending = 1;
+                bendingSkill(bending, player);
+            }
         }
         if (event.type == SDL_KEYUP) {
             if (event.key.keysym.sym == SDLK_LEFT) {
@@ -88,9 +100,6 @@ void handleInput(Player& player) {
             }
             if (event.key.keysym.sym == SDLK_RIGHT) {
                 player.isMovingRight = false;
-            }
-            if(event.key.keysym.sym == SDLK_e){
-                bending = 1;
             }
         }
 
@@ -105,7 +114,7 @@ void updatePlayer(Player& player) {
     if (player.isMovingLeft && player.x >= -70) {
         player.dx = -WALKSPEED;
     }
-    else if (player.isMovingRight && player.x < SCREEN_WIDTH-190) {
+    else if (player.isMovingRight && player.x < WINDOW_WIDTH-190) {
         player.dx = WALKSPEED;
     }
     else {
@@ -118,12 +127,12 @@ void updatePlayer(Player& player) {
     player.dy += GRAVITY;
 
     // Check for ground to stop falling and jumping
-    if (player.y >= SCREEN_HEIGHT - PLAYER_HEIGHT - 60) {
-        player.y = SCREEN_HEIGHT - PLAYER_HEIGHT - 60;
+    if (player.y >= WINDOW_HEIGHT - PLAYER_HEIGHT - 60) {
+        player.y = WINDOW_HEIGHT - PLAYER_HEIGHT - 60;
         player.dy = 0;
         player.isJumping = false;
     }
-    if(player.y == SCREEN_HEIGHT - PLAYER_HEIGHT - 60)
+    if(player.y == WINDOW_HEIGHT - PLAYER_HEIGHT - 60)
         {
             player.jumpCount = 0;
         }
@@ -133,7 +142,7 @@ void updatePlayer(Player& player) {
 
 // Function to render the background scene
 void renderScene() {
-    SDL_Rect rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+    SDL_Rect rect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
     SDL_RenderCopy(renderer, backgroundTexture, NULL, &rect);
 }
 
@@ -162,7 +171,7 @@ void renderPlayer(Player& player) {
             SDL_RenderCopy(renderer, spriteSheet1, &srcRect, &dstrect);
             playerDir = 2;
         }
-    } else if(player.isJumping){
+    } else if(player.isJumping) {
         if (playerDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         } else{
@@ -188,7 +197,7 @@ void renderPlayer(Player& player) {
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
 
-    window = SDL_CreateWindow("Game Character", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    window = SDL_CreateWindow("Game Character", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     // Load textures for the character facing left and right, and background
@@ -211,10 +220,7 @@ int main(int argc, char* argv[]) {
         updatePlayer(player); // Update player state
         renderScene(); // Render background scene
         renderPlayer(player); // Render player character
-        if(bending != 0)
-        {
-            bendingSkill(bending, player);
-        }
+        bendingSkill(bending, player);
         SDL_RenderPresent(renderer);
         SDL_Delay(10); // Delay for smoother animation
     }
