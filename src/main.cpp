@@ -40,28 +40,51 @@ struct Player {
 };
 
 int bendingSkill(int& bending, Player& player) {
-    static int initialX = player.x;
-    int totalX = initialX;
-    SDL_Rect srcRect4 = { ((SDL_GetTicks() / 150) % 10) * 68, 0, 68, 9 };
-    totalX = initialX + ((playerDir == 2) ? 32 : -32) * ((SDL_GetTicks() / 150) % 10);
-    static int initialY = player.y;
-    SDL_Rect dstrect2 = { totalX, initialY, 272, 36 };
-    if (totalX >= initialX + 32 * 9 || totalX <= initialX - 32*9) {
-        bending = 0;
-        return 0;
+    int fire_width = 53;
+    static int initialX = player.x + 200;
+    static int initialDir = playerDir;
+    static Uint32 bendingStartTime = SDL_GetTicks();  // Get the starting time of the bending action
+    int elapsedTicks = SDL_GetTicks() - bendingStartTime;
+    int frameIndex = (elapsedTicks / 125) % 10;
+    SDL_Rect srcRect4 = { frameIndex * fire_width, 310, fire_width, 51 };  // Calculate the source rectangle using the elapsed time
+    int totalX = initialX + ((initialDir == 2) ? fire_width : -fire_width) * (elapsedTicks / 150);
+    static int initialY = player.y + 64;
+    SDL_Rect dstrect2 = { totalX, initialY, 272, 136 }; // Use initialY as the y-coordinate
+
+    // Check if the first animation has finished
+    if (bending == 0 && frameIndex == 9) {
+        // Start the inverse animation
+        bending = 1;
+        bendingStartTime = SDL_GetTicks();  // Reset the starting time for the inverse animation
+        initialX = totalX; // Update initialX to the current position
+        initialDir = (initialDir == 1) ? 2 : 1; // Invert the direction
     }
+
+    // Calculate the frame index for the inverse animation
+    int inverseFrameIndex = 9 - frameIndex;
+    SDL_Rect inverseSrcRect = { inverseFrameIndex * fire_width, 310, fire_width, 51 };
+
     if (bending != 0) {
-        if(playerDir == 2){
-            SDL_RenderCopyEx(renderer, fireSheet, &srcRect4, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
+        if (totalX >= (initialX + fire_width * 8) || totalX <= (initialX - fire_width * 8)) {
+            bending = 0;
+            bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
+            return 0;
         }
-        else
-        {
-            SDL_RenderCopy(renderer, fireSheet, &srcRect4, &dstrect2);
+
+        if (initialDir == 1) {
+            SDL_RenderCopyEx(renderer, fireSheet, &inverseSrcRect, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
+        }
+        else {
+            SDL_RenderCopy(renderer, fireSheet, &inverseSrcRect, &dstrect2);
         }
     }
     else {
-        initialX = player.x; // Reset initialX when bending is finished
+        initialX = player.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
+        initialY = player.y + 96; // Keep initialY the same when bending is finished
+        initialDir = playerDir;
+        bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
     }
+
     return 0;
 }
 
@@ -154,10 +177,11 @@ void renderPlayer(Player& player) {
     SDL_Rect srcRect = {fT1 * 32, 3*32 , 32, 32};
     SDL_Rect srcRect2 = {fT2 * 32, 0, 32, 32};
     SDL_Rect srcRect3 = {fT3 * 32, 4 * 32, 32, 32};
-    SDL_Rect srcRect4 = {((SDL_GetTicks()/ 200) % 10)*68, 0, 68, 9};
-    fT1 = (SDL_GetTicks()/ 200) % 8;
-    fT2 = (SDL_GetTicks()/ 200) % 2;
-    fT3 = (SDL_GetTicks()/ 200) % 6;
+    SDL_Rect srcRect4 = {fT1 * 32, 8 * 32, 32, 32};
+    static Uint32 StartTime = SDL_GetTicks();
+    fT1 = ((SDL_GetTicks()-StartTime)/ 150) % 8;
+    fT2 = (SDL_GetTicks()/ 150) % 2;
+    fT3 = ((SDL_GetTicks()-StartTime)/ 150) % 6;
 
     SDL_RendererFlip flipType = SDL_FLIP_NONE;
 
@@ -178,8 +202,19 @@ void renderPlayer(Player& player) {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect3, &dstrect, 0, NULL, flipType);
-    } else {
+    }
+    else if(bending)
+    {
+        if (playerDir == 1) {
+            flipType = SDL_FLIP_HORIZONTAL;
+        } else{
+            flipType = SDL_FLIP_NONE;
+        }
+        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect4, &dstrect, 0, NULL, flipType);
+    } 
+    else {
         // Default texture when standing still
+        StartTime = SDL_GetTicks();
         if (playerDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         } else{
@@ -203,7 +238,7 @@ int main(int argc, char* argv[]) {
     // Load textures for the character facing left and right, and background
     SDL_Surface* surfaceBackground = IMG_Load("./assets/background2.jpg");
     SDL_Surface* surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
-    SDL_Surface* surfaceFireSheet = IMG_Load("./assets/fireball.png");
+    SDL_Surface* surfaceFireSheet = IMG_Load("./assets/fireball2.png");
 
     // Create textures from loaded surfaces
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
