@@ -1,25 +1,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
+#include "./vars.h"
 
 //Code created by xiaolong(索里曼), at 2:03AM 2024/3/6
-
-// Constants for screen dimensions and player attributes
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 700;
-const int PLAYER_WIDTH = 270;
-const int PLAYER_HEIGHT = 270;
-const int JUMP_FORCE = 20;
-const int WALKSPEED = 6;
-const int GRAVITY = 1;
-const int NUM_FRAMES = 8; // Number of animation frames in the sprite sheet
-const int FRAME_WIDTH = 100; // Width of each frame in the sprite sheet
-const int FRAME_HEIGHT = 100; // Height of each frame in the sprite sheet
-int cT = 2;
-int fT1;
-int fT2;
-int fT3;
-
 // SDL variables for window, renderer, and textures
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
@@ -36,10 +20,56 @@ struct Player {
     bool isMovingLeft; // Flag for left movement
     bool isMovingRight; // Flag for right movement
     int jumpCount;//amount of jumps done in succession in one instance
-    bool playFireball;
-    bool playIceball;
-    bool playRockball;
 };
+
+int bendingSkill(int& bending, Player& player) {
+    int fire_width = 53;
+    static int initialX = player.x + 200;
+    static int initialDir = playerDir;
+    static Uint32 bendingStartTime = SDL_GetTicks();  // Get the starting time of the bending action
+    int elapsedTicks = SDL_GetTicks() - bendingStartTime;
+    int frameIndex = (elapsedTicks / 125) % 10;
+    SDL_Rect srcRect4 = { frameIndex * fire_width, 310, fire_width, 51 };  // Calculate the source rectangle using the elapsed time
+    int totalX = initialX + ((initialDir == 2) ? fire_width : -fire_width) * (elapsedTicks / 150);
+    static int initialY = player.y + 64;
+    SDL_Rect dstrect2 = { totalX, initialY, 272, 136 }; // Use initialY as the y-coordinate
+
+    // Check if the first animation has finished
+    if (bending == 0 && frameIndex == 9) {
+        // Start the inverse animation
+        bending = 1;
+        bendingStartTime = SDL_GetTicks();  // Reset the starting time for the inverse animation
+        initialX = totalX; // Update initialX to the current position
+        initialDir = (initialDir == 1) ? 2 : 1; // Invert the direction
+    }
+
+    // Calculate the frame index for the inverse animation
+    int inverseFrameIndex = 9 - frameIndex;
+    SDL_Rect inverseSrcRect = { inverseFrameIndex * fire_width, 310, fire_width, 51 };
+
+    if (bending != 0) {
+        if (totalX >= (initialX + fire_width * 8) || totalX <= (initialX - fire_width * 8)) {
+            bending = 0;
+            bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
+            return 0;
+        }
+
+        if (initialDir == 1) {
+            SDL_RenderCopyEx(renderer, fireSheet, &inverseSrcRect, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
+        }
+        else {
+            SDL_RenderCopy(renderer, fireSheet, &inverseSrcRect, &dstrect2);
+        }
+    }
+    else {
+        initialX = player.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
+        initialY = player.y + 96; // Keep initialY the same when bending is finished
+        initialDir = playerDir;
+        bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
+    }
+
+    return 0;
+}
 
 //Code created by xiaolong(索里曼), at 9:00pm 2024/3/8
 
@@ -58,13 +88,17 @@ void handleInput(Player& player) {
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
                 player.jumpCount++;
-                // printf("%d\n", player.jumpCount);
+                printf("%d\n", player.jumpCount);
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
                 player.isMovingLeft = true;
             }
             if (event.key.keysym.sym == SDLK_RIGHT) {
                 player.isMovingRight = true;
+            }
+            if(event.key.keysym.sym == SDLK_e){
+                bending = 1;
+                bendingSkill(bending, player);
             }
         }
         if (event.type == SDL_KEYUP) {
@@ -75,19 +109,7 @@ void handleInput(Player& player) {
                 player.isMovingRight = false;
             }
         }
-        SDL_Keycode key = event.key.keysym.sym;
-        switch(key)
-        {
-            case SDLK_z:
-                player.playFireball = true;
-                break;
-            case SDLK_x:
-                player.playIceball = true;
-                break;
-            case SDLK_c:
-                player.playRockball = true;
-                break;
-        }
+
     }
 }
 
@@ -99,7 +121,7 @@ void updatePlayer(Player& player) {
     if (player.isMovingLeft && player.x >= -70) {
         player.dx = -WALKSPEED;
     }
-    else if (player.isMovingRight && player.x < SCREEN_WIDTH-190) {
+    else if (player.isMovingRight && player.x < WINDOW_WIDTH-190) {
         player.dx = WALKSPEED;
     }
     else {
@@ -112,12 +134,12 @@ void updatePlayer(Player& player) {
     player.dy += GRAVITY;
 
     // Check for ground to stop falling and jumping
-    if (player.y >= SCREEN_HEIGHT - PLAYER_HEIGHT - 60) {
-        player.y = SCREEN_HEIGHT - PLAYER_HEIGHT - 60;
+    if (player.y >= WINDOW_HEIGHT - PLAYER_HEIGHT - 60) {
+        player.y = WINDOW_HEIGHT - PLAYER_HEIGHT - 60;
         player.dy = 0;
         player.isJumping = false;
     }
-    if(player.y == SCREEN_HEIGHT - PLAYER_HEIGHT - 60)
+    if(player.y == WINDOW_HEIGHT - PLAYER_HEIGHT - 60)
         {
             player.jumpCount = 0;
         }
@@ -127,26 +149,24 @@ void updatePlayer(Player& player) {
 
 // Function to render the background scene
 void renderScene() {
-    SDL_Rect rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+    SDL_Rect rect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
     SDL_RenderCopy(renderer, backgroundTexture, NULL, &rect);
 }
 
 // Function to render the player character with animations
 void renderPlayer(Player& player) {
     SDL_Rect dstrect = { player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT };
-    SDL_Rect dstrect2 ={player.x + 32*((SDL_GetTicks()/ 200) % 10), player.y + 64, 272, 36};
-    //SDL_Rect srcRect = {cT * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT};
+    //SDL_Rect srcRect = {playerDir * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT};
     //Code created by xiaolong (索里曼) and Audrey (魏晓彤), at 8:00PM 2024/3/16
     SDL_Rect srcRect = {fT1 * 32, 3*32 , 32, 32};
     SDL_Rect srcRect2 = {fT2 * 32, 0, 32, 32};
     SDL_Rect srcRect3 = {fT3 * 32, 4 * 32, 32, 32};
-    SDL_Rect srcRect4 = {((SDL_GetTicks()/ 200) % 10)*68, 0, 68, 9};
-    fT1 = (SDL_GetTicks()/ 200) % 8;
-    fT2 = (SDL_GetTicks()/ 200) % 2;
-    fT3 = (SDL_GetTicks()/ 200) % 6;
-    printf("%d\n", ((SDL_GetTicks()/ 200) % 10));
+    SDL_Rect srcRect4 = {fT1 * 32, 8 * 32, 32, 32};
+    static Uint32 StartTime = SDL_GetTicks();
+    fT1 = ((SDL_GetTicks()-StartTime)/ 150) % 8;
+    fT2 = (SDL_GetTicks()/ 150) % 2;
+    fT3 = ((SDL_GetTicks()-StartTime)/ 150) % 6;
 
-    SDL_Texture* currentTexture = nullptr;
     SDL_RendererFlip flipType = SDL_FLIP_NONE;
 
     if (player.isMovingLeft || player.isMovingRight) {
@@ -154,38 +174,37 @@ void renderPlayer(Player& player) {
         //int frame = (SDL_GetTicks() / 200) % 2; // Change every 200 ms
         if (player.isMovingLeft) {
             SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect, &dstrect, 0, NULL, SDL_FLIP_HORIZONTAL);
-            cT = 1;
+            playerDir = 1;
         } else {
             SDL_RenderCopy(renderer, spriteSheet1, &srcRect, &dstrect);
-            cT = 2;
+            playerDir = 2;
         }
-    } else if(player.isJumping){
-        if (cT == 1) {
+    } else if(player.isJumping) {
+        if (playerDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         } else{
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect3, &dstrect, 0, NULL, flipType);
-    } else {
+    }
+    else if(bending)
+    {
+        if (playerDir == 1) {
+            flipType = SDL_FLIP_HORIZONTAL;
+        } else{
+            flipType = SDL_FLIP_NONE;
+        }
+        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect4, &dstrect, 0, NULL, flipType);
+    } 
+    else {
         // Default texture when standing still
-        if (cT == 1) {
+        StartTime = SDL_GetTicks();
+        if (playerDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         } else{
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &dstrect, 0, NULL, flipType);
-    }
-    if(player.playFireball)
-    {
-        SDL_RenderCopyEx(renderer, fireSheet, &srcRect4, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
-    }
-    else if(player.playIceball)
-    {
-        printf("x\n");
-    }
-    else if(player.playRockball)
-    {
-        printf("c\n");
     }
     //SDL_RenderCopy(renderer, currentTexture, &srcRect2, &rect);
     //SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &rect, 0, NULL, flipType);
@@ -197,19 +216,17 @@ void renderPlayer(Player& player) {
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
 
-    window = SDL_CreateWindow("WuXing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    window = SDL_CreateWindow("Game Character", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     // Load textures for the character facing left and right, and background
     SDL_Surface* surfaceBackground = IMG_Load("./assets/background2.jpg");
     SDL_Surface* surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
-    SDL_Surface* surfaceSpriteSheet2 = IMG_Load("./assets/sheet5.png");
-    SDL_Surface* surfaceFireSheet = IMG_Load("./assets/fireball.png");
+    SDL_Surface* surfaceFireSheet = IMG_Load("./assets/fireball2.png");
 
     // Create textures from loaded surfaces
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
     spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
-    spriteSheet2 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet2);
     fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
 
     Player player = {100, 100, 0, 0, false, 0}; // Initialize the player object
@@ -218,12 +235,11 @@ int main(int argc, char* argv[]) {
     while (isRunning) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-
         handleInput(player); // Handle user input
         updatePlayer(player); // Update player state
         renderScene(); // Render background scene
         renderPlayer(player); // Render player character
-
+        bendingSkill(bending, player);
         SDL_RenderPresent(renderer);
         SDL_Delay(10); // Delay for smoother animation
     }

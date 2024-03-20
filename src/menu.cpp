@@ -3,8 +3,8 @@
 #include <iostream>
 #include "main.hpp"
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 700;
+const int WINDOW_WIDTH = 1080;
+const int WINDOW_HEIGHT = 700;
 
 SDL_Texture* menuBackground = nullptr;
 struct sizebutton
@@ -16,10 +16,10 @@ struct sizebutton
 }button;
 
 void renderMenu(){
-    button.w = SCREEN_WIDTH/5;
-    button.h = SCREEN_HEIGHT/5;
-    button.x = (SCREEN_WIDTH-button.w)/2;
-    button.y = (SCREEN_HEIGHT-button.h)/2;
+    button.w = WINDOW_WIDTH/5;
+    button.h = WINDOW_HEIGHT/5;
+    button.x = (WINDOW_WIDTH-button.w)/2;
+    button.y = (WINDOW_HEIGHT-button.h)/2;
     SDL_Rect rectButton = {button.x, button.y, button.w, button.h};
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer, &rectButton);
