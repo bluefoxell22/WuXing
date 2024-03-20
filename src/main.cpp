@@ -26,6 +26,7 @@ SDL_Renderer* renderer = nullptr;
 SDL_Texture* backgroundTexture = nullptr;
 SDL_Texture* spriteSheet1 = nullptr;
 SDL_Texture* spriteSheet2 = nullptr;
+SDL_Texture* fireSheet = nullptr;
 
 // Struct to represent the player with various attributes
 struct Player {
@@ -34,7 +35,10 @@ struct Player {
     bool isJumping; // Flag for jump state
     bool isMovingLeft; // Flag for left movement
     bool isMovingRight; // Flag for right movement
-    int jumpCount;
+    int jumpCount;//amount of jumps done in succession in one instance
+    bool playFireball;
+    bool playIceball;
+    bool playRockball;
 };
 
 //Code created by xiaolong(索里曼), at 9:00pm 2024/3/8
@@ -70,6 +74,19 @@ void handleInput(Player& player) {
             if (event.key.keysym.sym == SDLK_RIGHT) {
                 player.isMovingRight = false;
             }
+        }
+        SDL_Keycode key = event.key.keysym.sym;
+        switch(key)
+        {
+            case SDLK_z:
+                player.playFireball = true;
+                break;
+            case SDLK_x:
+                player.playIceball = true;
+                break;
+            case SDLK_c:
+                player.playRockball = true;
+                break;
         }
     }
 }
@@ -116,15 +133,18 @@ void renderScene() {
 
 // Function to render the player character with animations
 void renderPlayer(Player& player) {
-    SDL_Rect rect = { player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT };
+    SDL_Rect dstrect = { player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT };
+    SDL_Rect dstrect2 ={player.x + 32*((SDL_GetTicks()/ 200) % 10), player.y + 64, 272, 36};
     //SDL_Rect srcRect = {cT * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT};
     //Code created by xiaolong (索里曼) and Audrey (魏晓彤), at 8:00PM 2024/3/16
     SDL_Rect srcRect = {fT1 * 32, 3*32 , 32, 32};
     SDL_Rect srcRect2 = {fT2 * 32, 0, 32, 32};
     SDL_Rect srcRect3 = {fT3 * 32, 4 * 32, 32, 32};
+    SDL_Rect srcRect4 = {((SDL_GetTicks()/ 200) % 10)*68, 0, 68, 9};
     fT1 = (SDL_GetTicks()/ 200) % 8;
     fT2 = (SDL_GetTicks()/ 200) % 2;
     fT3 = (SDL_GetTicks()/ 200) % 6;
+    printf("%d\n", ((SDL_GetTicks()/ 200) % 10));
 
     SDL_Texture* currentTexture = nullptr;
     SDL_RendererFlip flipType = SDL_FLIP_NONE;
@@ -133,10 +153,10 @@ void renderPlayer(Player& player) {
         // Animation frames for walking
         //int frame = (SDL_GetTicks() / 200) % 2; // Change every 200 ms
         if (player.isMovingLeft) {
-            SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect, &rect, 0, NULL, SDL_FLIP_HORIZONTAL);
+            SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect, &dstrect, 0, NULL, SDL_FLIP_HORIZONTAL);
             cT = 1;
         } else {
-            SDL_RenderCopy(renderer, spriteSheet1, &srcRect, &rect);
+            SDL_RenderCopy(renderer, spriteSheet1, &srcRect, &dstrect);
             cT = 2;
         }
     } else if(player.isJumping){
@@ -145,7 +165,7 @@ void renderPlayer(Player& player) {
         } else{
             flipType = SDL_FLIP_NONE;
         }
-        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect3, &rect, 0, NULL, flipType);
+        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect3, &dstrect, 0, NULL, flipType);
     } else {
         // Default texture when standing still
         if (cT == 1) {
@@ -153,7 +173,19 @@ void renderPlayer(Player& player) {
         } else{
             flipType = SDL_FLIP_NONE;
         }
-        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &rect, 0, NULL, flipType);
+        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &dstrect, 0, NULL, flipType);
+    }
+    if(player.playFireball)
+    {
+        SDL_RenderCopyEx(renderer, fireSheet, &srcRect4, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
+    }
+    else if(player.playIceball)
+    {
+        printf("x\n");
+    }
+    else if(player.playRockball)
+    {
+        printf("c\n");
     }
     //SDL_RenderCopy(renderer, currentTexture, &srcRect2, &rect);
     //SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &rect, 0, NULL, flipType);
@@ -172,11 +204,13 @@ int main(int argc, char* argv[]) {
     SDL_Surface* surfaceBackground = IMG_Load("./assets/background2.jpg");
     SDL_Surface* surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
     SDL_Surface* surfaceSpriteSheet2 = IMG_Load("./assets/sheet5.png");
+    SDL_Surface* surfaceFireSheet = IMG_Load("./assets/fireball.png");
 
     // Create textures from loaded surfaces
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
     spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
     spriteSheet2 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet2);
+    fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
 
     Player player = {100, 100, 0, 0, false, 0}; // Initialize the player object
 
