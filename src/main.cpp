@@ -54,7 +54,7 @@ void handleInput(Player& player) {
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
                 player.jumpCount++;
-                printf("%d\n", player.jumpCount);
+                // printf("%d\n", player.jumpCount);
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
                 player.isMovingLeft = true;
@@ -165,7 +165,7 @@ void renderPlayer(Player& player) {
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
 
-    window = SDL_CreateWindow("Game Character", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    window = SDL_CreateWindow("WuXing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     // Load textures for the character facing left and right, and background

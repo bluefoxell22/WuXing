@@ -1,2 +1,2 @@
 all:
-	g++ -I vendor/include -L vendor/lib -o bin/debug/main src/main.cpp -lmingw32 -lSDL2main -lSDL2 -lSDL2_image && start bin/debug/main
+	g++ -I vendor/include -L vendor/lib -o bin/debug/Game src/main.cpp -lmingw32 -lSDL2main -lSDL2 -lSDL2_image && start bin/debug/Game
