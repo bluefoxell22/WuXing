@@ -9,13 +9,18 @@ const int WINDOW_WIDTH = 1080;
 const int WINDOW_HEIGHT = 700;
 const int PLAYER_WIDTH = 270;
 const int PLAYER_HEIGHT = 270;
+const int ENEMY_WIDTH = 270;
+const int ENEMY_HEIGHT = 270;
 const int JUMP_FORCE = 20;
-const int WALKSPEED = 6;
+const int PLAYERSPEED = 6;
+const int ENEMYSPEED = 1;
 const int GRAVITY = 1;
 const int NUM_FRAMES = 8; // Number of animation frames in the sprite sheet
 const int FRAME_WIDTH = 100; // Width of each frame in the sprite sheet
 const int FRAME_HEIGHT = 100; // Height of each frame in the sprite sheet
+const int ATTACK_RANGE = 100;// 假设敌人攻击范围为100像素
 int playerDir = 2;
+int enemyDir = 1;
 int fT1;
 int fT2;
 int fT3;
@@ -37,7 +42,15 @@ struct Player {
     bool isMovingLeft; // Flag for left movement
     bool isMovingRight; // Flag for right movement
     int jumpCount;//amount of jumps done in succession in one instance
+    int health; //生命值
+    bool enemyAttack;//敌人是否攻击
 };
+
+Player player = { 100, 100, 0, 0, false, false, false, 0 ,100, false };// Initialize the player object
+Player enemy = { 500, 370, 0, 0, false, false, false, 0 ,100, false };
+
+void enemyAttack(Player& player, Player& enemy);
+
 
 int bendingSkill(int& bending, Player& player) {
     int fire_width = 53;
@@ -135,10 +148,10 @@ void handleInput(Player& player) {
 void updatePlayer(Player& player) {
     // Update player's horizontal movement based on input
     if (player.isMovingLeft && player.x >= -70) {
-        player.dx = -WALKSPEED;
+        player.dx = -PLAYERSPEED;
     }
     else if (player.isMovingRight && player.x < WINDOW_WIDTH-190) {
-        player.dx = WALKSPEED;
+        player.dx = PLAYERSPEED;
     }
     else {
         player.dx = 0;
@@ -159,6 +172,35 @@ void updatePlayer(Player& player) {
         {
             player.jumpCount = 0;
         }
+}
+
+void updateEnemy(Player& player, Player& enemy) {
+
+    // 敌人朝玩家移动
+    if (player.x > enemy.x) {
+        enemy.x += ENEMYSPEED; // 玩家在敌人右边
+        enemy.isMovingRight = true;
+        enemy.isMovingLeft = false;
+    }
+    else if (player.x < enemy.x) {
+        enemy.x -= ENEMYSPEED; // 玩家在敌人左边
+        enemy.isMovingRight = false;
+        enemy.isMovingLeft = true;
+    }
+
+    // 如果玩家跳跃，敌人也跳跃
+    if (player.isJumping) {
+        enemy.isJumping = true;
+        
+    }
+    else {
+        enemy.isJumping = false;
+    }
+    
+    //如果玩家和敌人在攻击距离范围内，敌人攻击
+    if (abs(player.x - enemy.x) < ATTACK_RANGE){
+        enemy.enemyAttack = true;
+    }
 }
 
 //Code created by 赵南星 and 刘珂璇, at 6:30pm 2024/3/10
@@ -224,6 +266,64 @@ void renderPlayer(Player& player) {
     }
     //SDL_RenderCopy(renderer, currentTexture, &srcRect2, &rect);
     //SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &rect, 0, NULL, flipType);
+    printf("%d\n", playerDir);
+}
+
+void renderEnemy(Player& player,Player& enemy) {
+    SDL_Rect dstrect = { enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT };
+    SDL_Rect srcRect = { fT1 * 60, 0 , 60, 104 }; //walk
+    SDL_Rect srcRect2 = { fT2 * 60, 9*104, 60, 104 }; //remain still
+    SDL_Rect srcRect3 = { fT3 * 60, 2 * 104, 60, 104 }; //jump
+    fT1 = (SDL_GetTicks() / 150) % 10;
+    fT2 = (SDL_GetTicks() / 150) % 2;
+    fT3 = (SDL_GetTicks() / 150) % 10;
+
+    SDL_RendererFlip flipType = SDL_FLIP_NONE;
+
+    if (enemy.isMovingLeft || enemy.isMovingRight) {
+        // Animation frames for walking
+        //int frame = (SDL_GetTicks() / 200) % 2; // Change every 200 ms
+        if (enemy.isMovingLeft) {
+            SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect, &dstrect, 0, NULL, SDL_FLIP_HORIZONTAL);
+            enemyDir = 1;
+        }
+        else {
+            SDL_RenderCopy(renderer, spriteSheet2, &srcRect, &dstrect);
+            enemyDir = 2;
+        }
+    }
+    else if (enemy.isJumping) {
+        if (enemyDir == 1) {
+            flipType = SDL_FLIP_HORIZONTAL;
+        }
+        else {
+            flipType = SDL_FLIP_NONE;
+        }
+        SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect3, &dstrect, 0, NULL, flipType);
+    }
+    else if (enemy.enemyAttack) {
+        enemyAttack(player, enemy);
+    }
+    else {
+        // Default texture when standing still
+        if (enemyDir == 1) {
+            flipType = SDL_FLIP_HORIZONTAL;
+        }
+        else {
+            flipType = SDL_FLIP_NONE;
+        }
+        SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect2, &dstrect, 0, NULL, flipType);
+    }
+   
+    
+}
+
+void enemyAttack(Player& player, Player& enemy) {
+    
+    
+        // 减少玩家生命值
+        player.health -= 10;
+   
 }
 
 //Code created by xiaolong (索里曼) and Audrey (魏晓彤), at 8:00PM 2024/3/6
@@ -239,11 +339,13 @@ int main(int argc, char* argv[]) {
     SDL_Surface* surfaceBackground = IMG_Load("./assets/background2.jpg");
     SDL_Surface* surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
     SDL_Surface* surfaceFireSheet = IMG_Load("./assets/fireball2.png");
+    SDL_Surface* surfaceSpriteSheet2 = IMG_Load("./assets/sheet6.png");
 
     // Create textures from loaded surfaces
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
     spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
     fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
+    spriteSheet2 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet2);
 
     Player player = {100, 100, 0, 0, false, 0}; // Initialize the player object
 
@@ -253,8 +355,10 @@ int main(int argc, char* argv[]) {
         SDL_RenderClear(renderer);
         handleInput(player); // Handle user input
         updatePlayer(player); // Update player state
+        updateEnemy(player, enemy);
         renderScene(); // Render background scene
         renderPlayer(player); // Render player character
+        renderEnemy(player,enemy); // Render enemy character
         bendingSkill(bending, player);
         SDL_RenderPresent(renderer);
         SDL_Delay(10); // Delay for smoother animation
