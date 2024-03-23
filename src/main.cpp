@@ -146,6 +146,7 @@ void handleInput(Character &player)
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
                 player.jumpCount++;
+                printf("%d\n", player.jumpCount);
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
                 player.isMovingLeft = true;
