@@ -1,2 +1,0 @@
-all:
-	g++ -I C:/SDL2/SDL2-2.30.0/x86_64-w64-mingw32/include -L C:/SDL2/SDL2-2.30.0/x86_64-w64-mingw32/lib -o bin/debug/Game src/main.cpp $(sdl2-config --cflags --libs) -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -m64 && start bin\debug\Game
