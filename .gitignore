@@ -3,3 +3,4 @@ main.o
 vendor
 bin
 MakeFile
+src/test.cpp
