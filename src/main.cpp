@@ -2,9 +2,9 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_audio.h>
-#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
-#include "./const.h"
+#include "./vars.h"
 
 SDL_Surface *surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
 SDL_Surface *surfaceSpriteSheet2 = IMG_Load("./assets/sheet6.png");
@@ -27,8 +27,8 @@ struct Character
     bool isMovingLeft;  // Flag for left movement
     bool isMovingRight; // Flag for right movement
     int jumpCount;      // amount of jumps done in succession in one instance
-    int health;         // 生命值
-    bool enemyAttack;   // 敌人是否攻击
+    int health;         // health points of character
+    bool enemyAttack;   // whether or not enemy is attacking
 };
 
 Character player = {100, 100, 0, 0, false, false, false, 0, 100, false}; // Initialize the player object
@@ -36,12 +36,23 @@ Character enemy = {500, 370, 0, 0, false, false, false, 0, 100, false};
 
 void enemyAttack(Character &player, Character &enemy);
 
-bool collisionDetection() {
+bool enemyCollision() {
     if(enemyDir == 1){
-        if(enemy.x <= player.x + PLAYER_WIDTH/1.7){
+        if(enemy.x <= player.x + PLAYER_WIDTH/1.7 && player.y+PLAYER_HEIGHT >= enemy.y+ENEMY_HEIGHT){
                 return true;
         }
-    }else if(enemy.x + ENEMY_WIDTH/1.7 >= player.x && enemy.x+ ENEMY_WIDTH/1.7 <= player.x + PLAYER_WIDTH/1.7 ) {
+    }else if((enemy.x + ENEMY_WIDTH/1.7 >= player.x && enemy.x+ ENEMY_WIDTH/1.7 <= player.x + PLAYER_WIDTH/1.7) && player.y+PLAYER_HEIGHT >= enemy.y+ENEMY_HEIGHT) {
+        return true;
+    }
+    // No collision
+    return false;
+}
+
+bool wallCollision() {
+    if(player.x >= WINDOW_WIDTH - 190){
+        return true;
+    }
+    else if(player.x <= -70) {
         return true;
     }
     // No collision
@@ -52,6 +63,7 @@ void setup() {
 
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Init(SDL_INIT_AUDIO);
+    TTF_Init;
     Mix_Init(MIX_INIT_MP3);                            // Initialize the audio library (for MP3 support)
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024); // Open the audio device
 
@@ -133,8 +145,7 @@ int bendingSkill(int &bending, Character &player)
 void handleInput(Character &player)
 {
     SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
+    while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             exit(0);
         }
@@ -201,30 +212,25 @@ void updatePlayer(Character &player, Character &enemy) {
     {
         player.jumpCount = 0;
     }
-    if(collisionFlag == 1 && player.x + 20 <= WINDOW_WIDTH - 190 && player.x - 20 >= -70)
-    {
-        player.x -= (enemyDir == 1) ? PLAYERSPEED:-PLAYERSPEED;
-        collisionFlag = 0;
-    }
 }
 
 void updateEnemy(Character &player, Character &enemy) {
     SDL_Rect collPlayer = {player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT};
     SDL_Rect collEnemy = {enemy.x, 0, ENEMY_WIDTH, ENEMY_HEIGHT};
-    // 敌人朝玩家移动
+    // Enemy movement towards the player
     if (player.x > enemy.x) {
-        enemy.x += ENEMYSPEED; // 玩家在敌人右边
+        enemy.x += ENEMYSPEED; // when the player is to the right of the enemy
         enemy.isMovingRight = true;
         enemy.isMovingLeft = false;
     }
     else if (player.x < enemy.x) {
 
-        enemy.x -= ENEMYSPEED; // 玩家在敌人左边
+        enemy.x -= ENEMYSPEED; // when the player is to the left of the enemy
         enemy.isMovingRight = false;
         enemy.isMovingLeft = true;
     }
 
-    // 如果玩家跳跃，敌人也跳跃
+    // if player jumps enemy also jumps
     if (player.isJumping) {
         enemy.isJumping = true;
     }
@@ -232,7 +238,7 @@ void updateEnemy(Character &player, Character &enemy) {
         enemy.isJumping = false;
     }
 
-    // 如果玩家和敌人在攻击距离范围内，敌人攻击
+    // if the enemy is within range
     if (abs(player.x - enemy.x) < ATTACK_RANGE) {
         enemy.enemyAttack = true;
     }
@@ -240,14 +246,50 @@ void updateEnemy(Character &player, Character &enemy) {
 
 // Function to render the background scene
 void renderScene() {
-    SDL_Rect rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-    SDL_Rect hpPlayerBarRect = {0, 0, 410, 100};
-    SDL_Rect hpEnemyBarRect = {WINDOW_WIDTH - 350, 0, 410, 100};
-    SDL_RenderCopy(renderer, backgroundTexture, NULL, &rect);
-    SDL_RenderCopy(renderer, hpBar, NULL, &hpPlayerBarRect);
-    SDL_RenderCopy(renderer, hpBar, NULL, &hpEnemyBarRect);
-}
+    SDL_Rect bgRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+    SDL_Rect hpPlayerBarRect = {0, 0, 4 * player.health, 50};
+    SDL_Rect hpEnemyBarRect = {WINDOW_WIDTH - 400, 0, 4 * enemy.health, 50};
+    SDL_Rect dstTextRectPlayer = {0, 0, 50, 50};
+    SDL_Rect dstTextRectEnemy = {WINDOW_WIDTH-50, 0, 50, 50};
+    SDL_RenderCopy(renderer, backgroundTexture, NULL, &bgRect);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &hpPlayerBarRect);
+    SDL_RenderFillRect(renderer, &hpEnemyBarRect);
 
+    // Render player health value
+    SDL_Color textColor = {255, 0, 0, 255}; // White color for the text
+
+    // Load a font
+    TTF_Font* font = TTF_OpenFont("./assets/font1.ttf", 44); // Replace "path_to_your_font.ttf" with the actual path to your font file
+
+    if (font == NULL) {
+        // Font loading failed, handle the error
+        // ...
+        // You might want to add an error message or return from the function here
+        return;
+    }
+
+    // Render player health value
+    /*SDL_Surface* playerHealthSurface = TTF_RenderText_Solid(font, "Hello", textColor);
+    SDL_Texture* playerHealthTexture = SDL_CreateTextureFromSurface(renderer, playerHealthSurface);
+    SDL_Rect playerHealthRect = {hpPlayerBarRect.x + hpPlayerBarRect.w + 10, hpPlayerBarRect.y, 100, 100};
+    SDL_FreeSurface(playerHealthSurface);
+    SDL_RenderCopy(renderer, playerHealthTexture, nullptr, &playerHealthRect);
+    SDL_RenderPresent(renderer);*/
+
+    // Render enemy health value
+    /*SDL_Surface* enemyHealthSurface = TTF_RenderText_Solid(font, std::to_string(123).c_str(), textColor);
+    SDL_Texture* enemyHealthTexture = SDL_CreateTextureFromSurface(renderer, enemyHealthSurface);
+    SDL_Rect enemyHealthRect = {hpEnemyBarRect.x - enemyHealthSurface->w - 10, hpEnemyBarRect.y, enemyHealthSurface->w, enemyHealthSurface->h};
+    SDL_RenderCopy(renderer, enemyHealthTexture, &dstTextRectEnemy, &enemyHealthRect);*/
+
+    // Clean up
+    /*SDL_FreeSurface(playerHealthSurface);
+    SDL_DestroyTexture(playerHealthTexture);
+    //SDL_FreeSurface(enemyHealthSurface);
+    //SDL_DestroyTexture(enemyHealthTexture);
+    TTF_CloseFont(font);*/
+}
 // Function to render the player character with animations
 void renderPlayer(Character &player) {
 
@@ -325,7 +367,7 @@ void renderEnemy(Character &player, Character &enemy) {
     if (enemy.isMovingLeft || enemy.isMovingRight)
     {
         // Animation frames for walking
-        // int frame = (SDL_GetTicks() / 200) % 2; // Change every 200 ms
+        // Change every 150 ms
         if (enemy.isMovingLeft)
         {
             SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect, &dstrectEnemy, 0, NULL, SDL_FLIP_HORIZONTAL);
@@ -370,13 +412,18 @@ void renderEnemy(Character &player, Character &enemy) {
 }
 
 void enemyAttack(Character &player, Character &enemy) {
-    // 减少玩家生命值
     player.health -= 10;
 }
 
-void bounce(Character &player) {
-    player.dx += -200;
-    printf("touching\n");
+void bounce() {
+    player.dx = 10;
+    player.dx = ((enemyDir == 1) ? -6: 6)*player.dx; // Reverse the player's velocity
+    player.x += player.dx;  // Update the player's position using the reversed velocity
+}
+
+void dont() {
+    player.dx = -player.dx; // Reverse the player's velocity
+    player.x += player.dx;  // Update the player's position using the reversed velocity
 }
 
 //  Main function where the game loop runs
@@ -392,15 +439,19 @@ int main(int argc, char *argv[]) {
     {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+        if(enemyCollision()){
+            bounce();
+            enemyAttack(player, enemy);
+        }
+        if(wallCollision())
+            dont();
         handleInput(player);         // Handle user input
-        if(collisionDetection())
-            bounce(player);
         updatePlayer(player, enemy); // Update player state
         updateEnemy(player, enemy);
         //collisionDetection();
         renderScene();        // Render background scene
         renderPlayer(player); // Render player character
-        //bendingSkill(bending, player);
+        bendingSkill(bending, player);
         renderEnemy(player, enemy); // Render enemy character
         healthBar();
         SDL_RenderPresent(renderer);
@@ -409,6 +460,7 @@ int main(int argc, char *argv[]) {
 
     // Clean up resources before exiting
     //Mix_FreeMusic(music);
+    
     Mix_CloseAudio();
     Mix_Quit();
     SDL_Quit();
