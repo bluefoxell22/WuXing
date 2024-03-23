@@ -172,16 +172,13 @@ void handleInput(Character &player)
 // Function to update the player's position and state
 void updatePlayer(Character &player, Character &enemy) {
     // Update player's horizontal movement based on input
-    if (player.isMovingLeft && player.x >= -70)
-    {
+    if (player.isMovingLeft && player.x >= -70){
         player.dx = -PLAYERSPEED;
     }
-    else if (player.isMovingRight && player.x < WINDOW_WIDTH - 190)
-    {
+    else if (player.isMovingRight && player.x < WINDOW_WIDTH - 190){
         player.dx = PLAYERSPEED;
     }
-    else
-    {
+    else{
         player.dx = 0;
     }
     SDL_Rect collPlayer = {player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT};
@@ -396,13 +393,10 @@ int main(int argc, char *argv[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         handleInput(player);         // Handle user input
+        if(collisionDetection())
+            bounce(player);
         updatePlayer(player, enemy); // Update player state
         updateEnemy(player, enemy);
-        if(collisionDetection()) {
-            bounce(player);
-            
-        }
-            
         //collisionDetection();
         renderScene();        // Render background scene
         renderPlayer(player); // Render player character
