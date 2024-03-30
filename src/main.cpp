@@ -1,71 +1,7 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_audio.h>
-#include <SDL2/SDL_ttf.h>
-#include <iostream>
-#include <stdlib.h>
-#include <time.h>
-#include "./vars.h"
-
-// SDL variables for window, renderer, and textures
-SDL_Surface *surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
-SDL_Surface *surfaceSpriteSheet2 = IMG_Load("./assets/sheet6.png");
-
-// SDL variables for window, renderer, and textures
-SDL_Window *window = nullptr;
-SDL_Renderer *renderer = nullptr;
-SDL_Texture *backgroundTexture = nullptr;
-SDL_Texture *spriteSheet1 = nullptr;
-SDL_Texture *spriteSheet2 = nullptr;
-SDL_Texture *fireSheet = nullptr;
-SDL_Texture *hpBar = nullptr;
-SDL_Texture* waterSheet = nullptr;
-SDL_Texture* earthSheet = nullptr;
-SDL_Texture* windSheet = nullptr;
-SDL_Texture* lightSheet = nullptr;
-SDL_Texture* firelightSheet = nullptr;
-SDL_Texture* waterlightSheet = nullptr;
-SDL_Texture* firewaterSheet = nullptr;
-SDL_Texture* texture = nullptr;
-
-// Struct to represent the player with various attributes
-struct Character
-{
-    int x, y;           // Position coordinates
-    int dx, dy;         // Velocity components
-    bool isJumping;     // Flag for jump state
-    bool isMovingLeft;  // Flag for left movement
-    bool isMovingRight; // Flag for right movement
-    int jumpCount;      // amount of jumps done in succession in one instance
-    int health;         // health points of character
-    int frame_width;
-    int frame_height;
-    int frame_number;
-};
-
-struct Enemy
-{
-    int x, y;           // Position coordinates
-    int dx, dy;         // Velocity components
-    bool isJumping;     // Flag for jump state
-    bool isMovingLeft;  // Flag for left movement
-    bool isMovingRight; // Flag for right movement
-    int jumpCount;      // amount of jumps done in succession in one instance
-    int health;         // health points of character
-    bool playerAttack;   // whether or not enemy is attacking
-    int attacktype;      
-    int frame_width;
-    int frame_height;
-    int frame_number;
-};
-
-Character player = {100, 100, 0, 0, false, false, false, 0, 100, false,0, 1}; // Initialize the player object
-Enemy enemy = {500, 370, 0, 0, false, false, false, 0, 100, false, 0, 1, 1};
+#include "./rendering.h"
 
 void enemyAttack();
 void playerAttack();
-
 
 bool enemyCollision() {
     if(enemyDir == 1){
@@ -92,11 +28,11 @@ bool wallCollision() {
 
 bool bendingCollision(SDL_Rect dstrect) {
     if(enemyDir == 1){
-        if(enemy.x <= dstrect.x + player.frame_width/1.7 && dstrect.y+player.frame_height >= enemy.y+ENEMY_HEIGHT){
+        if(enemy.x <= dstrect.x + playerbend.frame_width/1.7 && dstrect.y+playerbend.frame_height >= enemy.y+ENEMY_HEIGHT){
                 playerAttack();
                 return true;
         }
-    }else if((enemy.x + ENEMY_WIDTH/1.7 >= dstrect.x && enemy.x+ ENEMY_WIDTH/1.7 <= dstrect.x + player.frame_width/2) && dstrect.y+player.frame_height >= enemy.y+ENEMY_HEIGHT) {
+    }else if((enemy.x + ENEMY_WIDTH/1.7 >= dstrect.x && enemy.x+ ENEMY_WIDTH/1.7 <= dstrect.x + playerbend.frame_width/2) && dstrect.y+playerbend.frame_height >= enemy.y+ENEMY_HEIGHT) {
         playerAttack();
         return true;
     }
@@ -104,84 +40,90 @@ bool bendingCollision(SDL_Rect dstrect) {
     return false;
 }
 
-void setup() {
+Uint32 enemybending(Uint32 interval, void* param){
+    static int initialX = enemy.x + 200;
+    static int initialDir = enemyDir;
+    static Uint32 bendingStartTime = SDL_GetTicks();  // Get the starting time of the bending action
+    int elapsedTicks = SDL_GetTicks() - bendingStartTime;
+    int frameIndex = (elapsedTicks / enemybend.v1) % enemybend.frame_number;
+    SDL_Rect srcRect4 = { frameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height };  // Calculate the source rectangle using the elapsed time
+    int totalX = initialX + ((initialDir == 2) ? enemybend.frame_width / 2 : -enemybend.frame_width / 2) * (elapsedTicks / enemybend.v2);
+    static int initialY = enemy.y + 64;
+    SDL_Rect dstrect2 = { totalX, initialY, 272, 170 }; // Use initialY as the y-coordinate
+    printf("Test: %d\n", frameIndex);
 
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Init(SDL_INIT_AUDIO);
-    TTF_Init;
+    // Check if the first animation has finished
+    // if (enemybend.bending == 0 && frameIndex == (enemybend.frame_number-1)) {
+    //     // Start the inverse animation
+    //     printf("lol\n");
+    //     enemybend.bending = 1;
+    //     bendingStartTime = SDL_GetTicks();  // Reset the starting time for the inverse animation
+    //    // initialX = totalX; // Update initialX to the current position
+    //     initialDir = (initialDir == 1) ? 2 : 1; // Invert the direction
+    // }
 
-    window = SDL_CreateWindow("Game Character", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    //Mix_Music *music = Mix_LoadMUS("./assets/m.mp3");
+    // // Calculate the frame index for the inverse animation
+    // int inverseFrameIndex = (enemybend.frame_number-1) - frameIndex;
+    // SDL_Rect inverseSrcRect = { inverseFrameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height };
 
-    // Load textures for the character facing left and right, and background
-    SDL_Surface *surfaceBackground = IMG_Load("./assets/background2.jpg");
-    SDL_Surface *surfaceFireSheet = IMG_Load("./assets/fireball2.png");
-    SDL_Surface *surfaceHPBar = IMG_Load("./assets/hpBar.png");
-    SDL_Surface* surfaceWaterSheet = IMG_Load("./assets/water.png");
-    SDL_Surface* surfaceEarthSheet = IMG_Load("./assets/earth.png");
-    SDL_Surface* surfaceWindSheet = IMG_Load("./assets/wind.png");
-    SDL_Surface* surfaceLightSheet = IMG_Load("./assets/light.png");
-    SDL_Surface* surfaceFirelightSheet = IMG_Load("./assets/firelight.png");
-    SDL_Surface* surfaceWaterlightSheet = IMG_Load("./assets/waterlight.png");
-    SDL_Surface* surfaceFirewaterSheet = IMG_Load("./assets/firewater.png");
-
-
-    // Create textures from loaded surfaces
-    backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
-    spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
-    fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
-    spriteSheet2 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet2);
-    hpBar = SDL_CreateTextureFromSurface(renderer, surfaceHPBar);
-    fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
-    waterSheet = SDL_CreateTextureFromSurface(renderer, surfaceWaterSheet);
-    earthSheet = SDL_CreateTextureFromSurface(renderer, surfaceEarthSheet);
-    windSheet = SDL_CreateTextureFromSurface(renderer, surfaceWindSheet);
-    lightSheet = SDL_CreateTextureFromSurface(renderer, surfaceLightSheet);
-    firelightSheet = SDL_CreateTextureFromSurface(renderer, surfaceFirelightSheet);
-    waterlightSheet = SDL_CreateTextureFromSurface(renderer, surfaceWaterlightSheet);
-    firewaterSheet = SDL_CreateTextureFromSurface(renderer, surfaceFirewaterSheet);
-}
-
-void healthBar() {
-    if(player.health >= 0 && enemy.health >= 0) {
-        //printf("Character HP = %d\n Enemy HP = %d\n", player.health, enemy.health);
+        //printf("%d\n", enemybend.bending);
+    if (enemybend.bending != 0) {
+        if (totalX >= (initialX + enemybend.frame_width / 2 * (enemybend.frame_number-2)) || totalX <= (initialX - enemybend.frame_width / 2* (enemybend.frame_number-2))) {
+            enemybend.bending = 0;
+            bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
+            //return interval;
+        }
+        if (initialDir == enemybend.inverseDir) {
+        
+            SDL_RenderCopyEx(renderer,enemybend.texture, &srcRect4, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
+        }
+        else {
+            SDL_RenderCopy(renderer, enemybend.texture, &srcRect4, &dstrect2);
+        }
     }
+    else {
+        initialX = enemy.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
+        initialY = enemy.y + 96; // Keep initialY the same when bending is finished
+        initialDir = enemyDir;
+        bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
+    }
+
+    return interval;
 }
 
-int bendingSkill(int& bending,int& image_Y,SDL_Texture* texture,int& inverseDir,int& v1,int& v2) {
+int bendingSkill(int& bending,SDL_Texture* texture) {
 
     static int initialX = player.x + 200;
     static int initialDir = playerDir;
     static Uint32 bendingStartTime = SDL_GetTicks();  // Get the starting time of the bending action
     int elapsedTicks = SDL_GetTicks() - bendingStartTime;
-    int frameIndex = (elapsedTicks / v1) % player.frame_number;
-    SDL_Rect srcRect4 = { frameIndex * player.frame_width, image_Y, player.frame_width, player.frame_height };  // Calculate the source rectangle using the elapsed time
-    int totalX = initialX + ((initialDir == 2) ? player.frame_width / 2 : -player.frame_width / 2) * (elapsedTicks / v2);
+    int frameIndex = (elapsedTicks / playerbend.v1) % playerbend.frame_number;
+    SDL_Rect srcRect4 = { frameIndex * playerbend.frame_width, playerbend.frame_Y, playerbend.frame_width, playerbend.frame_height };  // Calculate the source rectangle using the elapsed time
+    int totalX = initialX + ((initialDir == 2) ? playerbend.frame_width / 2 : -playerbend.frame_width / 2) * (elapsedTicks / playerbend.v2);
     static int initialY = player.y + 64;
     SDL_Rect dstrect2 = { totalX, initialY, 272, 170 }; // Use initialY as the y-coordinate
 
     // Check if the first animation has finished
-    if (bending == 0 && frameIndex == (player.frame_number-1)) {
-        // Start the inverse animation
-        bending = 1;
-        bendingStartTime = SDL_GetTicks();  // Reset the starting time for the inverse animation
-       // initialX = totalX; // Update initialX to the current position
-        initialDir = (initialDir == 1) ? 2 : 1; // Invert the direction
-    }
+    // if (playerbend.bending == 0 && frameIndex == (playerbend.frame_number-1)) {
+    //     // Start the inverse animation
+    //     playerbend.bending = 1;
+    //     bendingStartTime = SDL_GetTicks();  // Reset the starting time for the inverse animation
+    //    // initialX = totalX; // Update initialX to the current position
+    //     initialDir = (initialDir == 1) ? 2 : 1; // Invert the direction
+    // }
 
-    // Calculate the frame index for the inverse animation
-    int inverseFrameIndex = (player.frame_number-1) - frameIndex;
-    SDL_Rect inverseSrcRect = { inverseFrameIndex * player.frame_width, image_Y, player.frame_width, player.frame_height };
+    // // Calculate the frame index for the inverse animation
+    // int inverseFrameIndex = (playerbend.frame_number-1) - frameIndex;
+    // SDL_Rect inverseSrcRect = { inverseFrameIndex * playerbend.frame_width, playerbend.frame_Y, playerbend.frame_width, playerbend.frame_height };
 
-    if (bending != 0) {
-        if (totalX >= (initialX + player.frame_width / 2 * (player.frame_number-2)) || totalX <= (initialX - player.frame_width / 2* (player.frame_number-2))) {
+    if (playerbend.bending != 0) {
+        if (totalX >= (initialX + playerbend.frame_width / 2 * (playerbend.frame_number-2)) || totalX <= (initialX - playerbend.frame_width / 2* (playerbend.frame_number-2))) {
             bending = 0;
             bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
             return 0;
         }
 
-        if (initialDir == inverseDir) {
+        if (initialDir == playerbend.inverseDir) {
             SDL_RenderCopyEx(renderer, texture, &srcRect4, &dstrect2, 0, NULL, SDL_FLIP_HORIZONTAL);
         }
         else {
@@ -201,18 +143,20 @@ int bendingSkill(int& bending,int& image_Y,SDL_Texture* texture,int& inverseDir,
 // Function to handle user input events
 void handleInput() {
     SDL_Event event;
+
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            exit(0);
+            gameisRunning = false;
         }
         else if(event.key.keysym.sym == SDLK_ESCAPE) {
-            exit(0);
+            gameisRunning = false;
         }
         if (event.type == SDL_KEYDOWN) {
             if (event.key.keysym.sym == SDLK_SPACE && player.jumpCount < 2) {
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
                 player.jumpCount++;
+               // printf("%d\n", player.jumpCount);
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
                 player.isMovingLeft = true;
@@ -221,100 +165,100 @@ void handleInput() {
                 player.isMovingRight = true;
             }
             if(event.key.keysym.sym == SDLK_e){
-                bending = 1;
-                player.frame_number = 10;
-                image_Y = 310;
-                player.frame_width = 53;
-                player.frame_height = 51;
-                texture = fireSheet;
-                inverseDir = 1;
-                v1 = 125;
-                v2 = 125;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 10;
+                playerbend.frame_Y = 310;
+                playerbend.frame_width = 53;
+                playerbend.frame_height = 51;
+                playerbend.texture = fireSheet;
+                playerbend.inverseDir = 1;
+                playerbend.v1 = 125;
+                playerbend.v2 = 125;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_r){
-                bending = 1;
-                player.frame_number = 5;
-                image_Y = 0;
-                player.frame_width = 192;
-                player.frame_height = 192;
-                texture = waterSheet;
-                inverseDir = 2;
-                v1 = 210;
-                v2 = 315;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 5;
+                playerbend.frame_Y = 0;
+                playerbend.frame_width = 192;
+                playerbend.frame_height = 192;
+                playerbend.texture = waterSheet;
+                playerbend.inverseDir = 2;
+                playerbend.v1 = 210;
+                playerbend.v2 = 315;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_f){
-                bending = 1;
-                player.frame_number = 5;
-                image_Y = 0;
-                player.frame_width = 192;
-                player.frame_height = 192;
-                texture = earthSheet;
-                inverseDir = 1;
-                v1 = 210;
-                v2 = 420;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 5;
+                playerbend.frame_Y = 0;
+                playerbend.frame_width = 192;
+                playerbend.frame_height = 192;
+                playerbend.texture = earthSheet;
+                playerbend.inverseDir = 1;
+                playerbend.v1 = 210;
+                playerbend.v2 = 420;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_g){
-                bending = 1;
-                player.frame_number = 5;
-                image_Y = 0;
-                player.frame_width = 192;
-                player.frame_height = 200;
-                texture = windSheet;
-                inverseDir = 1;
-                v1 = 210;
-                v2 = 420;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 5;
+                playerbend.frame_Y = 0;
+                playerbend.frame_width = 192;
+                playerbend.frame_height = 200;
+                playerbend.texture = windSheet;
+                playerbend.inverseDir = 1;
+                playerbend.v1 = 210;
+                playerbend.v2 = 420;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_h){
-                bending = 1;
-                player.frame_number = 5;
-                image_Y = 192;
-                player.frame_width = 192;
-                player.frame_height = 192;
-                texture = lightSheet;
-                inverseDir = 1;
-                v1 = 210;
-                v2 = 315;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 5;
+                playerbend.frame_Y = 192;
+                playerbend.frame_width = 192;
+                playerbend.frame_height = 192;
+                playerbend.texture = lightSheet;
+                playerbend.inverseDir = 1;
+                playerbend.v1 = 210;
+                playerbend.v2 = 315;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_v){
-                bending = 1;
-                player.frame_number = 5;
-                image_Y = 0;
-                player.frame_width = 192;
-                player.frame_height = 192;
-                texture = firelightSheet;
-                inverseDir = 1;
-                v1 = 210;
-                v2 = 315;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 5;
+                playerbend.frame_Y = 0;
+                playerbend.frame_width = 192;
+                playerbend.frame_height = 192;
+                playerbend.texture = firelightSheet;
+                playerbend.inverseDir = 1;
+                playerbend.v1 = 210;
+                playerbend.v2 = 315;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_b){
-                bending = 1;
-                player.frame_number = 5;
-                image_Y = 384;
-                player.frame_width = 192;
-                player.frame_height = 192;
-                texture = waterlightSheet;
-                inverseDir = 1;
-                v1 = 210;
-                v2 = 315;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 5;
+                playerbend.frame_Y = 384;
+                playerbend.frame_width = 192;
+                playerbend.frame_height = 192;
+                playerbend.texture = waterlightSheet;
+                playerbend.inverseDir = 1;
+                playerbend.v1 = 210;
+                playerbend.v2 = 315;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_n){
-                bending = 1;
-                player.frame_number = 5;
-                image_Y = 0;
-                player.frame_width = 192;
-                player.frame_height = 192;
-                texture = firewaterSheet;
-                inverseDir = 2;
-                v1 = 210;
-                v2 = 315;
-                bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
+                playerbend.bending = 1;
+                playerbend.frame_number = 5;
+                playerbend.frame_Y = 0;
+                playerbend.frame_width = 192;
+                playerbend.frame_height = 192;
+                playerbend.texture = firewaterSheet;
+                playerbend.inverseDir = 2;
+                playerbend.v1 = 210;
+                playerbend.v2 = 315;
+                bendingSkill(playerbend.bending,playerbend.texture);
             }
             
         }
@@ -392,154 +336,7 @@ void updateEnemy() {
     if (abs(player.x - enemy.x) < ATTACK_RANGE) {
         //srand(time(NULL));
         enemy.playerAttack = true;
-        enemy.attacktype = 1;
-    }
-}
-
-// Function to render the background scene
-void renderScene() {
-    SDL_Rect bgRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-    SDL_Rect hpPlayerBarRect = {0, 0, 4 * player.health, 50};
-    SDL_Rect hpEnemyBarRect = {WINDOW_WIDTH - 400, 0, 4 * enemy.health, 50};
-    SDL_Rect dstTextRectPlayer = {0, 0, 50, 50};
-    SDL_Rect dstTextRectEnemy = {WINDOW_WIDTH-50, 0, 50, 50};
-    SDL_RenderCopy(renderer, backgroundTexture, NULL, &bgRect);
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_RenderFillRect(renderer, &hpPlayerBarRect);
-    SDL_RenderFillRect(renderer, &hpEnemyBarRect);
-
-    // Render player health value
-    SDL_Color textColor = {255, 0, 0, 255}; // White color for the text
-// Function to render the player character with animations
-void renderPlayer() {
-
-    SDL_Rect dstrectPlayer = {player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT};
-    SDL_Rect srcRect = {fT1 * 32, 3 * 32, 32, 32};
-    SDL_Rect srcRect2 = {fT2 * 32, 0, 32, 32};
-    SDL_Rect srcRect3 = {fT3 * 32, 4 * 32, 32, 32};
-    SDL_Rect srcRect4 = {fT1 * 32, 8 * 32, 32, 32};
-    static Uint32 StartTime1 = SDL_GetTicks();
-    fT1 = ((SDL_GetTicks() - StartTime1) / 150) % 8;
-    fT2 = (SDL_GetTicks() / 150) % 2;
-    fT3 = ((SDL_GetTicks() - StartTime1) / 150) % 6;
-
-    SDL_RendererFlip flipType = SDL_FLIP_NONE;
-
-    if (player.isMovingLeft || player.isMovingRight)
-    {
-        // Animation frames for walking
-        if (player.isMovingLeft){
-            SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect, &dstrectPlayer, 0, NULL, SDL_FLIP_HORIZONTAL);
-            playerDir = 1;
-        }
-        else{
-            SDL_RenderCopy(renderer, spriteSheet1, &srcRect, &dstrectPlayer);
-            playerDir = 2;
-        }
-    }
-    else if (player.isJumping)
-    {
-        if (playerDir == 1){
-            flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else{
-            flipType = SDL_FLIP_NONE;
-        }
-        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect3, &dstrectPlayer, 0, NULL, flipType);
-    }
-    else if (bending)
-    {
-        if (playerDir == 1){
-            flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else{
-            flipType = SDL_FLIP_NONE;
-        }
-        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect4, &dstrectPlayer, 0, NULL, flipType);
-    }
-    else
-    {
-        // Default texture when standing still
-        StartTime1 = SDL_GetTicks();
-        if (playerDir == 1){
-            flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else{
-            flipType = SDL_FLIP_NONE;
-        }
-        SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &dstrectPlayer, 0, NULL, flipType);
-    }
-}
-
-void renderEnemy() {
-    int enemyWidth = 55;
-    SDL_Rect dstrectEnemy = {enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT};
-    SDL_Rect srcRect = {fT4 * enemyWidth, 0, enemyWidth, 104};        // walk
-    SDL_Rect srcRect2 = {fT5 * enemyWidth, 9 * 104, enemyWidth, 104}; // remain still
-    SDL_Rect srcRect3 = {fT6 * enemyWidth, 2 * 104, enemyWidth, 104}; // jump
-    SDL_Rect srcRect4 = {fT7 * enemyWidth, 1 * 104, enemyWidth, 104}; // attack1
-    static Uint32 StartTime = SDL_GetTicks();
-    fT4 = ((SDL_GetTicks() - StartTime) / 150) % 7;
-    fT5 = (SDL_GetTicks() / 150) % 2;
-    fT6 = ((SDL_GetTicks() - StartTime) / 150) % 10;
-    fT7 = ((SDL_GetTicks() - StartTime) / 150) % 11;
-
-    SDL_RendererFlip flipType = SDL_FLIP_NONE;
-
-    if (enemy.isMovingLeft || enemy.isMovingRight)
-    {
-        // Animation frames for walking
-        // Change every 150 ms
-        if (enemy.isMovingLeft)
-        {
-            SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect, &dstrectEnemy, 0, NULL, SDL_FLIP_HORIZONTAL);
-            enemyDir = 1;
-        }
-        else
-        {
-            SDL_RenderCopy(renderer, spriteSheet2, &srcRect, &dstrectEnemy);
-            enemyDir = 2;
-        }
-    }
-    else if (enemy.isJumping)
-    {
-        if (enemyDir == 1)
-        {
-            flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else
-        {
-            flipType = SDL_FLIP_NONE;
-        }
-        SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect3, &dstrectEnemy, 0, NULL, flipType);
-    }
-    else if (enemy.attacktype != 0)
-    {
-        if(enemy.attacktype == 1){
-            if (enemyDir == 1)
-        {
-            flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else
-        {
-            flipType = SDL_FLIP_NONE;
-        }
-        SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect4, &dstrectEnemy, 0, NULL, flipType);
-        }
-    }
-    else
-    {
-        // Default texture when standing still
-        StartTime = SDL_GetTicks();
-        if (enemyDir == 1)
-        {
-            flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else
-        {
-            flipType = SDL_FLIP_NONE;
-        }
-        SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect2, &dstrectEnemy, 0, NULL, flipType);
+        enemy.bendingType = 1;
     }
 }
 
@@ -572,43 +369,49 @@ void dont() {
     player.x += player.dx;  // Update the player's position using the reversed velocity
 }
 
+Uint32 tiktok(Uint32 interval, void* param) {
+    on = (on == true) ? false : true;
+    return interval;
+}
+
 //  Main function where the game loop runs
 int main(int argc, char *argv[]) {
 
     setup();
+    enemy.bendingType = 1;
+    if(enemy.bendingType == 1) {
+        enemybend.bending = 0;
+        enemybend.frame_number = 10;
+        enemybend.frame_Y = 310;
+        enemybend.frame_width = 53;
+        enemybend.frame_height = 51;
+        enemybend.texture = fireSheet;
+        enemybend.inverseDir = 1;
+        enemybend.v1 = 125;
+        enemybend.v2 = 125;
+    }
+    
+    SDL_TimerID timerId = SDL_AddTimer(2000, tiktok, nullptr);
 
-    // For playing music
-    //Mix_PlayMusic(music, -1);
+    while (gameisRunning) {
+        
+        if(enemyCollision()){ bounce(); enemyAttack(); }
+        if(wallCollision()) dont();
 
-    bool isRunning = true;
-    while (isRunning) {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        if(enemyCollision()){
-            bounce();
-            enemyAttack(player, enemy);
-        }
-            enemyAttack();
-        }
-        if(wallCollision())
-            dont();
-        handleInput();         // Handle user input
-        updatePlayer(); // Update player state
+        handleInput();      // Handle user input
+        renderScene();      // Render background scene
+        updatePlayer();     // Update player state
         updateEnemy();
-        renderScene();        // Render background scene
-        renderPlayer(); // Render player character
-        bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
-        renderEnemy(); // Render enemy character
-        healthBar();
+        renderPlayer();     // Render player character
+        bendingSkill(playerbend.bending,playerbend.texture);
+        if(on) enemybending(2000, nullptr);
+        renderEnemy();      // Render enemy character
         SDL_RenderPresent(renderer);
-        SDL_Delay(10); // Delay for smoother animation
+        SDL_Delay(10);      // Delay for smoother animation
     }
 
-    // Clean up resources before exiting
-    SDL_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-
     SDL_Quit();
 
     return 0;
