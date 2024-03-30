@@ -1,12 +1,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include "./vars.h"
-// 
-//Code created by xiaolong(索里曼), at 2:03AM 2024/3/6
+
 // SDL variables for window, renderer, and textures
 SDL_Surface *surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
 SDL_Surface *surfaceSpriteSheet2 = IMG_Load("./assets/sheet6.png");
@@ -108,8 +109,6 @@ void setup() {
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Init(SDL_INIT_AUDIO);
     TTF_Init;
-    //Mix_Init(MIX_INIT_MP3);                            // Initialize the audio library (for MP3 support)
-    //Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024); // Open the audio device*/
 
     window = SDL_CreateWindow("Game Character", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -202,8 +201,6 @@ int bendingSkill(int& bending,int& image_Y,SDL_Texture* texture,int& inverseDir,
 // Function to handle user input events
 void handleInput() {
     SDL_Event event;
-    bool ctrlPressed = false;
-    bool shiftPressed = false;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             exit(0);
@@ -216,7 +213,6 @@ void handleInput() {
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
                 player.jumpCount++;
-                printf("%d\n", player.jumpCount);
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
                 player.isMovingLeft = true;
@@ -414,38 +410,6 @@ void renderScene() {
 
     // Render player health value
     SDL_Color textColor = {255, 0, 0, 255}; // White color for the text
-
-    // Load a font
-    //TTF_Font* font = TTF_OpenFont("./assets/font1.ttf", 44); // Replace "path_to_your_font.ttf" with the actual path to your font file
-
-    /*if (font == NULL) {
-        // Font loading failed, handle the error
-        // ...
-        // You might want to add an error message or return from the function here
-        return;
-    }*/
-
-    // Render player health value
-    /*SDL_Surface* playerHealthSurface = TTF_RenderText_Solid(font, "Hello", textColor);
-    SDL_Texture* playerHealthTexture = SDL_CreateTextureFromSurface(renderer, playerHealthSurface);
-    SDL_Rect playerHealthRect = {hpPlayerBarRect.x + hpPlayerBarRect.w + 10, hpPlayerBarRect.y, 100, 100};
-    SDL_FreeSurface(playerHealthSurface);
-    SDL_RenderCopy(renderer, playerHealthTexture, nullptr, &playerHealthRect);
-    SDL_RenderPresent(renderer);*/
-
-    // Render enemy health value
-    /*SDL_Surface* enemyHealthSurface = TTF_RenderText_Solid(font, std::to_string(123).c_str(), textColor);
-    SDL_Texture* enemyHealthTexture = SDL_CreateTextureFromSurface(renderer, enemyHealthSurface);
-    SDL_Rect enemyHealthRect = {hpEnemyBarRect.x - enemyHealthSurface->w - 10, hpEnemyBarRect.y, enemyHealthSurface->w, enemyHealthSurface->h};
-    SDL_RenderCopy(renderer, enemyHealthTexture, &dstTextRectEnemy, &enemyHealthRect);*/
-
-    // Clean up
-    /*SDL_FreeSurface(playerHealthSurface);
-    SDL_DestroyTexture(playerHealthTexture);
-    //SDL_FreeSurface(enemyHealthSurface);
-    //SDL_DestroyTexture(enemyHealthTexture);
-    TTF_CloseFont(font);*/
-}
 // Function to render the player character with animations
 void renderPlayer() {
 
@@ -622,6 +586,8 @@ int main(int argc, char *argv[]) {
         SDL_RenderClear(renderer);
         if(enemyCollision()){
             bounce();
+            enemyAttack(player, enemy);
+        }
             enemyAttack();
         }
         if(wallCollision())
@@ -629,7 +595,6 @@ int main(int argc, char *argv[]) {
         handleInput();         // Handle user input
         updatePlayer(); // Update player state
         updateEnemy();
-        //collisionDetection();
         renderScene();        // Render background scene
         renderPlayer(); // Render player character
         bendingSkill(bending,image_Y,texture,inverseDir,v1,v2);
@@ -640,10 +605,6 @@ int main(int argc, char *argv[]) {
     }
 
     // Clean up resources before exiting
-    //Mix_FreeMusic(music);
-    
-    //Mix_CloseAudio();
-    //Mix_Quit();
     SDL_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
