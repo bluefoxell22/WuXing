@@ -378,7 +378,7 @@ void updateEnemy() {
 
 void enemyAttack() {
     if(player.health > 1) {
-        player.health -= 10;
+        player.health -= 8;
     }
     else{
         player.health = 1;
@@ -387,7 +387,7 @@ void enemyAttack() {
 
 void playerAttack() {
     if(enemy.health >= 1) {
-        enemy.health -= 10;
+        enemy.health -= playerDamage;
     }
     else{
         enemy.health = 0;
@@ -468,6 +468,7 @@ void changeEnemy() {
         enemy.frameNum = 6;
         enemy.rowNum = 0;
         enemy.bendingType = 1;
+        playerDamage = 5;
     }
     else if(mission == FIRST) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface3);
@@ -557,7 +558,7 @@ int main(int argc, char *argv[]) {
     setup();
    // playVideo();
     enemy.bendingType = 1;  
-    SDL_TimerID timerId = SDL_AddTimer(2000, tiktok, nullptr);
+    SDL_TimerID timerId = SDL_AddTimer(1500, tiktok, nullptr);
     while (gameisRunning) {
         SDL_RenderClear(renderer);
         if(enemyCollision()) bounce();
