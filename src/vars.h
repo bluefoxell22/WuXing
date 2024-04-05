@@ -112,6 +112,7 @@ SDL_Texture *sixth = nullptr;
 SDL_Texture *sixthwin = nullptr;
 SDL_Texture *youwin = nullptr;
 SDL_Texture *logoTexture = nullptr;
+SDL_Texture *heart = nullptr;
 
 // Struct to represent the player with various attributes
 struct Character

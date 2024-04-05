@@ -1,4 +1,4 @@
-#include "./controls.hpp"
+#include "./gameHanding.hpp"
 
 // This also includes input handling
 
@@ -166,4 +166,33 @@ void setPlayerBendProperties(SDL_Texture &texture, int frame_num, int frame_Y, i
     playerbend.inverseDir = invDir;
     playerbend.v1 = v1;
     playerbend.v2 = v2;
+}
+
+void enemyAttack() {
+    if(player.health > 1) {
+        player.health -= 8;
+    }
+    else{
+        player.health = 1;
+    }
+}
+
+void playerAttack() {
+    if(enemy.health >= 1) {
+        enemy.health -= playerDamage;
+    }
+    else{
+        enemy.health = 0;
+    }
+}
+
+void bounce() {
+    player.dx = 10;
+    player.dx = ((enemyDir == 1) ? -6: 6)*player.dx; // Reverse the player's velocity
+    player.x += player.dx;  // Update the player's position using the reversed velocity
+}
+
+void dont() {
+    player.dx = -player.dx; // Reverse the player's velocity
+    player.x += player.dx;  // Update the player's position using the reversed velocity
 }

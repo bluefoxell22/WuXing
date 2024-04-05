@@ -47,6 +47,7 @@ void setup() {
     SDL_Surface* surfaceSixthMap = IMG_Load("./assets/Map11.png");
     SDL_Surface* surfaceSixthWinMap = IMG_Load("./assets/Map12.png");
     SDL_Surface* surfaceYouWin = IMG_Load("./assets/youwin.jpg");
+    SDL_Surface* surfaceHeart = IMG_Load("./assets/heart.png");
 
 
     // Create textures from loaded surfaces
@@ -226,12 +227,10 @@ void renderEnemy() {
     {
         // Default texture when standing still
         StartTime = SDL_GetTicks();
-        if (enemyDir == 1)
-        {
+        if (enemyDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         }
-        else
-        {
+        else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect2, &dstrectEnemy, 0, NULL, flipType);

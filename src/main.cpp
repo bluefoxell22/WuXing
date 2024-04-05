@@ -34,6 +34,7 @@ void updatePlayer() {
     }
 }
 
+// Function to update the enemy's position and state
 void updateEnemy() {
     SDL_Rect collPlayer = {player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT};
     SDL_Rect collEnemy = {enemy.x, 0, ENEMY_WIDTH, ENEMY_HEIGHT};
@@ -59,36 +60,8 @@ void updateEnemy() {
     }
 }
 
-void enemyAttack() {
-    if(player.health > 1) {
-        player.health -= 8;
-    }
-    else{
-        player.health = 1;
-    }
-}
-
-void playerAttack() {
-    if(enemy.health >= 1) {
-        enemy.health -= playerDamage;
-    }
-    else{
-        enemy.health = 0;
-    }
-}
-
-void bounce() {
-    player.dx = 10;
-    player.dx = ((enemyDir == 1) ? -6: 6)*player.dx; // Reverse the player's velocity
-    player.x += player.dx;  // Update the player's position using the reversed velocity
-}
-
-void dont() {
-    player.dx = -player.dx; // Reverse the player's velocity
-    player.x += player.dx;  // Update the player's position using the reversed velocity
-}
-
-Uint32 tiktok(Uint32 interval, void* param) {
+// Setting a timer for when the enemy start attacking
+Uint32 enemyBendingInterval(Uint32 interval, void* param) {
     timer = true;
     if(enemy.bendingType == 1) {
         enemybend.bending = 1;
@@ -141,51 +114,6 @@ Uint32 tiktok(Uint32 interval, void* param) {
     return interval;
 }
 
-
-void changeEnemy() {
-    printf("Mission:%d\n");
-    if(mission == ZERO) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
-        enemy.enemyWidth = 88;
-        enemy.enemyHeight = 98;
-        enemy.frameNum = 6;
-        enemy.rowNum = 0;
-        enemy.bendingType = 1;
-        playerDamage = 5;
-    }
-    else if(mission == FIRST) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface3);
-        enemy.enemyWidth = 78;
-        enemy.enemyHeight = 56;
-        enemy.frameNum = 5;
-        enemy.rowNum = 1;
-        enemy.bendingType = 2;
-    }
-    else if(mission == SECOND) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface4);
-        enemy.enemyWidth = 160;
-        enemy.enemyHeight = 171;
-        enemy.frameNum = 8;
-        enemy.rowNum = 1;
-        enemy.bendingType = 3;
-    }
-    else if(mission == THIRD) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface5);
-        enemy.enemyWidth = 183;
-        enemy.enemyHeight = 140;
-        enemy.frameNum = 5;
-        enemy.rowNum = 1;
-        enemy.bendingType = 4;
-    }
-    else if(mission == FOURTH) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface6);
-        enemy.enemyWidth = 157;
-        enemy.enemyHeight = 152;
-        enemy.frameNum = 6;
-        enemy.rowNum = 0;
-    }
-}
-
 void checkWin() {
     if(player.health < 10){
         printf("You lose\n");
@@ -214,34 +142,13 @@ void checkWin() {
     }
 }
 
-void handleInputatMap() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        if (event.type == SDL_QUIT)
-        {
-            exit(0);
-        }
-        if (event.type == SDL_KEYDOWN)
-        {
-            if (event.key.keysym.sym == SDLK_SPACE)
-            {
-                gameState = PLAYING;
-                isWin = false;
-                mapRendered = false;
-                changeEnemy();
-            }
-        }
-    }
-}
-
 //  Main function where the game loop runs
 int main(int argc, char *argv[]) {
 
     setup();
    // playVideo();
     enemy.bendingType = 1;  
-    SDL_TimerID timerId = SDL_AddTimer(1500, tiktok, nullptr);
+    SDL_TimerID timerId = SDL_AddTimer(1500, enemyBendingInterval, nullptr);
     while (gameisRunning) {
         SDL_RenderClear(renderer);
         if(enemyCollision()) bounce();

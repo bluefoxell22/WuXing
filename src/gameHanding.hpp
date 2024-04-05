@@ -18,6 +18,50 @@ void changeColor(SDL_Texture* imageTexture, SDL_Rect imageRect) {
         //SDL_Delay(20000);
 }
 
+void changeEnemy() {
+    printf("Mission:%d\n");
+    if(mission == ZERO) {
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
+        enemy.enemyWidth = 88;
+        enemy.enemyHeight = 98;
+        enemy.frameNum = 6;
+        enemy.rowNum = 0;
+        enemy.bendingType = 1;
+        playerDamage = 5;
+    }
+    else if(mission == FIRST) {
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface3);
+        enemy.enemyWidth = 78;
+        enemy.enemyHeight = 56;
+        enemy.frameNum = 5;
+        enemy.rowNum = 1;
+        enemy.bendingType = 2;
+    }
+    else if(mission == SECOND) {
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface4);
+        enemy.enemyWidth = 160;
+        enemy.enemyHeight = 171;
+        enemy.frameNum = 8;
+        enemy.rowNum = 1;
+        enemy.bendingType = 3;
+    }
+    else if(mission == THIRD) {
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface5);
+        enemy.enemyWidth = 183;
+        enemy.enemyHeight = 140;
+        enemy.frameNum = 5;
+        enemy.rowNum = 1;
+        enemy.bendingType = 4;
+    }
+    else if(mission == FOURTH) {
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface6);
+        enemy.enemyWidth = 157;
+        enemy.enemyHeight = 152;
+        enemy.frameNum = 6;
+        enemy.rowNum = 0;
+    }
+}
+
 void resetGameState() {
     // 重置玩家和敌人的状态到初始值
     player.x = 100;
@@ -68,6 +112,7 @@ void handleInputatHelp() {
         }
     }
 }
+
 void handleInputatMenu() {
     SDL_Event event;
 
@@ -102,6 +147,7 @@ void handleInputatMenu() {
         }
     }
 }
+
 void handleInputatSetting() {
     SDL_Event event;
 
@@ -123,6 +169,7 @@ void handleInputatSetting() {
         }
     }
 }
+
 void handleInputatRealHelp() {
     SDL_Event event;
 
@@ -157,8 +204,28 @@ void handleInputatRealHelp() {
     }
 }
 
-// Function to handle user input events
+void handleInputatMap() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        if (event.type == SDL_QUIT) {
+            gameisRunning = false;
+        }
+        
+        if (event.type == SDL_KEYDOWN)
+        {
+            if (event.key.keysym.sym == SDLK_SPACE)
+            {
+                gameState = PLAYING;
+                isWin = false;
+                mapRendered = false;
+                changeEnemy();
+            }
+        }
+    }
+}
 
+// Function to handle user input events
 void handleInput() {
     SDL_Event event;
         Uint32 currentTime = SDL_GetTicks();
@@ -167,7 +234,7 @@ void handleInput() {
         Uint32 elapsedTime = currentTime - lastKeyPressTime;
 
         // Set a cooldown period of 200 milliseconds (adjust as needed)
-        Uint32 cooldown = 300;
+        Uint32 cooldown = 500;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             gameisRunning = false;
@@ -266,4 +333,3 @@ void handleInput() {
 
     }
 }
-
