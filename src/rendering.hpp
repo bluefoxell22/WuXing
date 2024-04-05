@@ -53,6 +53,7 @@ void setup() {
     // Create textures from loaded surfaces
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
     logoTexture = SDL_CreateTextureFromSurface(renderer, surfaceLogo);
+    heartTexture = SDL_CreateTextureFromSurface(renderer, surfaceHeart);
     spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
     fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
     spriteSheet2 = nullptr;
@@ -93,14 +94,16 @@ void setup() {
 // Function to render the background scene
 void renderScene() {
     SDL_Rect bgRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-    SDL_Rect hpPlayerBarRect = {0, 0, 4 * player.health, 50};
-    SDL_Rect hpEnemyBarRect = {WINDOW_WIDTH - 400, 0, 4 * enemy.health, 50};
+    SDL_Rect hpPlayerBarRect = {25, 12, 4 * player.health, 40};
+    SDL_Rect hpEnemyBarRect = {WINDOW_WIDTH - 400, 12, 4 * enemy.health, 40};
     SDL_Rect dstTextRectPlayer = {0, 0, 50, 50};
     SDL_Rect dstTextRectEnemy = {WINDOW_WIDTH-50, 0, 50, 50};
     SDL_RenderCopy(renderer, backgroundTexture, NULL, &bgRect);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, &hpPlayerBarRect);
     SDL_RenderFillRect(renderer, &hpEnemyBarRect);
+    SDL_RenderCopy(renderer, heartTexture, NULL, &heartRect1);
+    SDL_RenderCopy(renderer, heartTexture, NULL, &heartRect2);
 
     // Render player health value
     SDL_Color textColor = {255, 0, 0, 255}; // White color for the text
@@ -236,6 +239,7 @@ void renderEnemy() {
         SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect2, &dstrectEnemy, 0, NULL, flipType);
     }
 }
+
 void  renderLoseMenu(SDL_Renderer* renderer) {
     SDL_SetTextureAlphaMod(setting, 255);
     SDL_SetTextureAlphaMod(play, 255);
@@ -243,6 +247,7 @@ void  renderLoseMenu(SDL_Renderer* renderer) {
     SDL_RenderCopy(renderer, setting, NULL, &settingrButton);
     SDL_RenderCopy(renderer, play, NULL, &playButton);
 }
+
 void  renderMainMenu(SDL_Renderer* renderer) {
     SDL_SetTextureAlphaMod(setting, 255);
     SDL_SetTextureAlphaMod(help, 255);
@@ -254,6 +259,7 @@ void  renderMainMenu(SDL_Renderer* renderer) {
     SDL_RenderCopy(renderer, help, NULL, &helpButton);
 
 }
+
 void  renderHelp(SDL_Renderer* renderer) {
     SDL_SetTextureAlphaMod(returnback, 255);
     SDL_RenderCopy(renderer, helpbackground, NULL, &rect);
@@ -261,11 +267,13 @@ void  renderHelp(SDL_Renderer* renderer) {
     SDL_RenderCopy(renderer, realhelpbutton, NULL, &realhelpButtonRect);
 
 }
+
 void  renderSetting(SDL_Renderer* renderer) {
     SDL_SetTextureAlphaMod(returnback, 255);
     SDL_RenderCopy(renderer, settingbackground, NULL, &rect);
     SDL_RenderCopy(renderer, returnback, NULL, &returnbackButton);
 }
+
 void  renderRealHelp(SDL_Renderer* renderer) {
     
     SDL_RenderCopy(renderer,realhelp, NULL, &rect);
@@ -275,6 +283,7 @@ void  renderRealHelp(SDL_Renderer* renderer) {
     }    
     
 }
+
 void  renderYouWin(SDL_Renderer* renderer) {
     for (int i = 0; i <=255; i++) {
         SDL_RenderCopy(renderer, backgroundTexture, NULL, &rect);
@@ -287,6 +296,7 @@ void  renderYouWin(SDL_Renderer* renderer) {
     isWin = false;
     // gameisRunning = false;
 }
+
 void renderaMap(SDL_Texture* backmap, SDL_Texture* backmappluswin, SDL_Texture* latermap) {
     if (!mapRendered) {
         SDL_RenderCopy(renderer, backmap, NULL, &rect);

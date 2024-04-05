@@ -21,11 +21,11 @@ void changeColor(SDL_Texture* imageTexture, SDL_Rect imageRect) {
 void changeEnemy() {
     printf("Mission:%d\n");
     if(mission == ZERO) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
-        enemy.enemyWidth = 88;
-        enemy.enemyHeight = 98;
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface7);
+        enemy.enemyWidth = 100;
+        enemy.enemyHeight = 40;
         enemy.frameNum = 6;
-        enemy.rowNum = 0;
+        enemy.rowNum = 1;
         enemy.bendingType = 1;
         playerDamage = 5;
     }
@@ -72,7 +72,7 @@ void resetGameState() {
     player.jumpCount = 0;
     player.health = 100;
     // 敌人状态也被重置
-    spriteSheet2 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet2);
+    spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface7);
     enemy.x = 500;
     enemy.y = 370;
     enemy.dx = 0;
