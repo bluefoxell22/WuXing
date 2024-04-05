@@ -1,5 +1,8 @@
 #include "./rendering.hpp"
 
+int bendingSkill(int& bending, SDL_Texture* texture);
+void setPlayerBendProperties(SDL_Texture &texture, int frame_num, int frame_Y, int frame_width, int frame_height, int invDir, int v1, int v2);
+
 void changeColor(SDL_Texture* imageTexture, SDL_Rect imageRect) {
     // 设置图片颜色为暗色
     //SDL_SetTextureColorMod(imageTexture, 128, 128, 128);
@@ -120,7 +123,6 @@ void handleInputatSetting() {
         }
     }
 }
-
 void handleInputatRealHelp() {
     SDL_Event event;
 
@@ -154,3 +156,114 @@ void handleInputatRealHelp() {
         }
     }
 }
+
+// Function to handle user input events
+
+void handleInput() {
+    SDL_Event event;
+        Uint32 currentTime = SDL_GetTicks();
+
+        // Calculate the time elapsed since the last key press
+        Uint32 elapsedTime = currentTime - lastKeyPressTime;
+
+        // Set a cooldown period of 200 milliseconds (adjust as needed)
+        Uint32 cooldown = 300;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            gameisRunning = false;
+        }
+        else if(event.key.keysym.sym == SDLK_ESCAPE) {
+            gameisRunning = false;
+        }
+        else if (event.type == SDL_MOUSEBUTTONDOWN && (isLosed || isPaused))
+        {
+            int mouseX = event.button.x;
+            int mouseY = event.button.y;
+            // 检查是否点击Play按钮
+            if (mouseX > playButton.x && mouseX < playButton.x + playButton.w &&
+                mouseY > playButton.y && mouseY < playButton.y + playButton.h && !isPaused && isLosed) {
+                // 重置游戏状态来重新开始
+                isLosed = false;
+                changeColor(play, playButton);
+                resetGameState();
+
+            }
+            else if (mouseX > settingrButton.x && mouseX < settingrButton.x + settingrButton.w &&
+                mouseY > settingrButton.y && mouseY < settingrButton.y + settingrButton.h && isLosed && !isPaused) {
+                changeColor(setting, settingrButton);
+                gameState = MENU;
+                isLosed = false;
+                return;
+            }
+        }
+        if (event.type == SDL_KEYDOWN) {
+            if (event.key.repeat == 0) {
+                if (elapsedTime >= cooldown || (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)) {
+            // Update the last key press time
+            lastKeyPressTime = currentTime;
+            if (event.key.keysym.sym == SDLK_SPACE && player.jumpCount < 2) {
+                player.dy = -JUMP_FORCE;
+                player.isJumping = true;
+                player.jumpCount++;
+            }
+            if (event.key.keysym.sym == SDLK_LEFT) {
+                player.isMovingLeft = true;
+            }
+            if (event.key.keysym.sym == SDLK_RIGHT) {
+                player.isMovingRight = true;
+            }
+            if(event.key.keysym.sym == SDLK_e){
+                player.playerAttack = true;
+                setPlayerBendProperties(*fireSheet, 10, 310, 53, 51, 1, 125, 125);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            if(event.key.keysym.sym == SDLK_r){
+                player.playerAttack = true;
+                setPlayerBendProperties(*waterSheet, 5, 0, 192, 192, 2, 210, 315);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            if(event.key.keysym.sym == SDLK_f){
+                player.playerAttack = true;
+                setPlayerBendProperties(*earthSheet, 5, 0, 192, 192, 1, 210, 420);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            if(event.key.keysym.sym == SDLK_g){
+                player.playerAttack = true;
+                setPlayerBendProperties(*windSheet, 5, 0, 192, 200, 1, 210, 315);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            if(event.key.keysym.sym == SDLK_h){
+                player.playerAttack = true;
+                setPlayerBendProperties(*lightSheet, 5, 192, 192, 192, 1, 210, 315);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            if(event.key.keysym.sym == SDLK_v){
+                player.playerAttack = true;
+                setPlayerBendProperties(*firelightSheet, 5, 0, 192, 192, 1, 210, 315);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            if(event.key.keysym.sym == SDLK_b){
+                player.playerAttack = true;
+                setPlayerBendProperties(*waterlightSheet, 5, 384, 192, 192, 1, 210, 315);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            if(event.key.keysym.sym == SDLK_n){
+                player.playerAttack = true;
+                setPlayerBendProperties(*firewaterSheet, 5, 0, 192, 192, 1, 210, 315);
+                bendingSkill(playerbend.bending,playerbend.texture);
+            }
+            }
+            }
+        }
+        if (event.type == SDL_KEYUP) {
+            if (event.key.keysym.sym == SDLK_LEFT) {
+                player.isMovingLeft = false;
+            }
+            if (event.key.keysym.sym == SDLK_RIGHT) {
+                player.isMovingRight = false;
+            }
+        }
+
+    }
+}
+
