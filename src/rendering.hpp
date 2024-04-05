@@ -14,7 +14,8 @@ void setup() {
     //Mix_Music *music = Mix_LoadMUS("./assets/m.mp3");
 
     // Load textures for the character facing left and right, and background
-    SDL_Surface *surfaceBackground = IMG_Load("./assets/background2.jpg");
+    SDL_Surface *surfaceBackground = IMG_Load("./assets/background1.png");
+    SDL_Surface *surfaceLogo = IMG_Load("./assets/logo.png");
     SDL_Surface *surfaceFireSheet = IMG_Load("./assets/fireball2.png");
     SDL_Surface *surfaceHPBar = IMG_Load("./assets/hpBar.png");
     SDL_Surface* surfaceWaterSheet = IMG_Load("./assets/water.png");
@@ -50,6 +51,7 @@ void setup() {
 
     // Create textures from loaded surfaces
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
+    logoTexture = SDL_CreateTextureFromSurface(renderer, surfaceLogo);
     spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
     fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
     spriteSheet2 = nullptr;
@@ -247,6 +249,7 @@ void  renderMainMenu(SDL_Renderer* renderer) {
     SDL_SetTextureAlphaMod(help, 255);
     SDL_SetTextureAlphaMod(play, 255);
     SDL_RenderCopy(renderer, backgroundTexture, NULL, &rect);
+    SDL_RenderCopy(renderer, logoTexture, NULL, &logoRect);
     SDL_RenderCopy(renderer, setting, NULL, &settingrButton);
     SDL_RenderCopy(renderer, play, NULL, &playButton);
     SDL_RenderCopy(renderer, help, NULL, &helpButton);

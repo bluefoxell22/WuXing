@@ -42,6 +42,7 @@ bool renderMap = false;
 bool isLosed = false;
 bool isWin = false;
 bool mapRendered = false; // 在函数外部定义，用于跟踪latermap是否已经完全渲染
+Uint32 lastKeyPressTime = 0;
 
 enum GameState
 {
@@ -110,6 +111,7 @@ SDL_Texture *fifthwin = nullptr;
 SDL_Texture *sixth = nullptr;
 SDL_Texture *sixthwin = nullptr;
 SDL_Texture *youwin = nullptr;
+SDL_Texture *logoTexture = nullptr;
 
 // Struct to represent the player with various attributes
 struct Character
@@ -162,6 +164,7 @@ Bending playerbend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
 Bending enemybend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
 
 SDL_Rect playButton = {400, 360, 280, 60};
+SDL_Rect logoRect = {400, 10, 260, 260};
 SDL_Rect helpButton = {400, 465, 280, 60};
 SDL_Rect settingrButton = {400, 570, 280, 60};
 SDL_Rect returnbackButton = {WINDOW_WIDTH - 200, 10, 120, 120};

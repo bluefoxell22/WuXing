@@ -154,10 +154,28 @@ int bendingSkill(int& bending, SDL_Texture* texture) {
     return 0;
 }
 
+void setPlayerBendProperties(SDL_Texture &texture, int frame_num, int frame_Y, int frame_width, int frame_height, int invDir, int v1, int v2) {
+    playerbend.bending = 1;
+    playerbend.texture = &texture;
+    playerbend.frame_number = frame_num;
+    playerbend.frame_Y = frame_Y;
+    playerbend.frame_width = frame_width;
+    playerbend.frame_height = frame_height;
+    playerbend.inverseDir = invDir;
+    playerbend.v1 = v1;
+    playerbend.v2 = v2;
+}
+
 // Function to handle user input events
 void handleInput() {
     SDL_Event event;
+        Uint32 currentTime = SDL_GetTicks();
 
+        // Calculate the time elapsed since the last key press
+        Uint32 elapsedTime = currentTime - lastKeyPressTime;
+
+        // Set a cooldown period of 200 milliseconds (adjust as needed)
+        Uint32 cooldown = 500;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             gameisRunning = false;
@@ -188,6 +206,9 @@ void handleInput() {
         }
         if (event.type == SDL_KEYDOWN) {
             if (event.key.repeat == 0) {
+                if (elapsedTime >= cooldown || (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)) {
+            // Update the last key press time
+            lastKeyPressTime = currentTime;
             if (event.key.keysym.sym == SDLK_SPACE && player.jumpCount < 2) {
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
@@ -201,107 +222,44 @@ void handleInput() {
             }
             if(event.key.keysym.sym == SDLK_e){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 10;
-                playerbend.frame_Y = 310;
-                playerbend.frame_width = 53;
-                playerbend.frame_height = 51;
-                playerbend.texture = fireSheet;
-                playerbend.inverseDir = 1;
-                playerbend.v1 = 125;
-                playerbend.v2 = 125;
+                setPlayerBendProperties(*fireSheet, 10, 310, 53, 51, 1, 125, 125);
                 bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_r){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 5;
-                playerbend.frame_Y = 0;
-                playerbend.frame_width = 192;
-                playerbend.frame_height = 192;
-                playerbend.texture = waterSheet;
-                playerbend.inverseDir = 2;
-                playerbend.v1 = 210;
-                playerbend.v2 = 315;
+                setPlayerBendProperties(*waterSheet, 5, 0, 192, 192, 2, 210, 315);
                 bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_f){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 5;
-                playerbend.frame_Y = 0;
-                playerbend.frame_width = 192;
-                playerbend.frame_height = 192;
-                playerbend.texture = earthSheet;
-                playerbend.inverseDir = 1;
-                playerbend.v1 = 210;
-                playerbend.v2 = 420;
+                setPlayerBendProperties(*earthSheet, 5, 0, 192, 192, 1, 210, 420);
                 bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_g){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 5;
-                playerbend.frame_Y = 0;
-                playerbend.frame_width = 192;
-                playerbend.frame_height = 200;
-                playerbend.texture = windSheet;
-                playerbend.inverseDir = 1;
-                playerbend.v1 = 210;
-                playerbend.v2 = 420;
+                setPlayerBendProperties(*windSheet, 5, 0, 192, 200, 1, 210, 315);
                 bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_h){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 5;
-                playerbend.frame_Y = 192;
-                playerbend.frame_width = 192;
-                playerbend.frame_height = 192;
-                playerbend.texture = lightSheet;
-                playerbend.inverseDir = 1;
-                playerbend.v1 = 210;
-                playerbend.v2 = 315;
+                setPlayerBendProperties(*lightSheet, 5, 192, 192, 192, 1, 210, 315);
                 bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_v){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 5;
-                playerbend.frame_Y = 0;
-                playerbend.frame_width = 192;
-                playerbend.frame_height = 192;
-                playerbend.texture = firelightSheet;
-                playerbend.inverseDir = 1;
-                playerbend.v1 = 210;
-                playerbend.v2 = 315;
+                setPlayerBendProperties(*firelightSheet, 5, 0, 192, 192, 1, 210, 315);
                 bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_b){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 5;
-                playerbend.frame_Y = 384;
-                playerbend.frame_width = 192;
-                playerbend.frame_height = 192;
-                playerbend.texture = waterlightSheet;
-                playerbend.inverseDir = 1;
-                playerbend.v1 = 210;
-                playerbend.v2 = 315;
+                setPlayerBendProperties(*waterlightSheet, 5, 384, 192, 192, 1, 210, 315);
                 bendingSkill(playerbend.bending,playerbend.texture);
             }
             if(event.key.keysym.sym == SDLK_n){
                 player.playerAttack = true;
-                playerbend.bending = 1;
-                playerbend.frame_number = 5;
-                playerbend.frame_Y = 0;
-                playerbend.frame_width = 192;
-                playerbend.frame_height = 192;
-                playerbend.texture = firewaterSheet;
-                playerbend.inverseDir = 2;
-                playerbend.v1 = 210;
-                playerbend.v2 = 315;
+                setPlayerBendProperties(*firewaterSheet, 5, 0, 192, 192, 1, 210, 315);
                 bendingSkill(playerbend.bending,playerbend.texture);
+            }
             }
             }
         }
