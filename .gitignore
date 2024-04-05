@@ -3,3 +3,4 @@
 main.o
 vendor
 MakeFile
+bin/debug/assets
