@@ -21,7 +21,7 @@ void changeColor(SDL_Texture* imageTexture, SDL_Rect imageRect) {
 void changeEnemy() {
     printf("Mission:%d\n");
     if(mission == ZERO) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface7);
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface1);
         enemy.enemyWidth = 100;
         enemy.enemyHeight = 40;
         enemy.frameNum = 6;
@@ -30,7 +30,7 @@ void changeEnemy() {
         playerDamage = 5;
     }
     else if(mission == FIRST) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface3);
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
         enemy.enemyWidth = 78;
         enemy.enemyHeight = 56;
         enemy.frameNum = 5;
@@ -74,7 +74,7 @@ void resetGameState() {
     // 敌人状态也被重置
     spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface7);
     enemy.x = 500;
-    enemy.y = 370;
+    enemy.y = 310;
     enemy.dx = 0;
     enemy.dy = 0;
     enemy.isJumping = false;
@@ -266,9 +266,17 @@ void handleInput() {
         if (event.type == SDL_KEYDOWN) {
             if (event.key.repeat == 0) {
                 if (elapsedTime >= cooldown || (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)) {
+            // Reset player.jumpCount when the player lands on the ground
+            if (player.isJumping && player.y + PLAYER_HEIGHT >= WINDOW_HEIGHT - yLimit)
+            {
+                // Player has landed, reset jump count
+                player.jumpCount = 0;
+                player.isJumping = false;
+            }
             // Update the last key press time
             lastKeyPressTime = currentTime;
-            if (event.key.keysym.sym == SDLK_SPACE && player.jumpCount < 2) {
+            if (event.key.keysym.sym == SDLK_SPACE && (player.jumpCount < 2 || player.y + PLAYER_HEIGHT >= WINDOW_HEIGHT - yLimit))
+            {
                 player.dy = -JUMP_FORCE;
                 player.isJumping = true;
                 player.jumpCount++;

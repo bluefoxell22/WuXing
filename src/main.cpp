@@ -1,5 +1,17 @@
 #include "./combat.hpp"
 
+SDL_Rect collPlayer = {player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT};
+SDL_Rect collEnemy = {enemy.x, 0, ENEMY_WIDTH, ENEMY_HEIGHT};
+
+bool checkCollision(const Character& spriteA, const Enemy& spriteB) {
+    // Calculate the bounding rectangles of the sprites
+    SDL_Rect rectA = {spriteA.x, spriteA.y, PLAYER_WIDTH - COLLISION_BUFFER, PLAYER_HEIGHT};
+    SDL_Rect rectB = {spriteB.x, spriteB.y, spriteB.enemyWidth, spriteB.enemyHeight+30};
+
+    // Check for collision using SDL's collision function
+    return SDL_HasIntersection(&rectA, &rectB) == SDL_TRUE;
+}
+
 // Function to update the player's position and state
 void updatePlayer() {
     // Update player's horizontal movement based on input
@@ -12,8 +24,7 @@ void updatePlayer() {
     else{
         player.dx = 0;
     }
-    SDL_Rect collPlayer = {player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT};
-    SDL_Rect collEnemy = {enemy.x, 0, ENEMY_WIDTH, ENEMY_HEIGHT};
+    
     // Update player's position and apply gravity
     player.x += player.dx;
     player.x;
@@ -22,41 +33,48 @@ void updatePlayer() {
     player.dy += GRAVITY;
 
     // Check for ground to stop falling and jumping
-    if (player.y >= WINDOW_HEIGHT - PLAYER_HEIGHT - 60)
+    if (player.y >= WINDOW_HEIGHT - PLAYER_HEIGHT - yLimit)
     {
-        player.y = WINDOW_HEIGHT - PLAYER_HEIGHT - 60;
+        player.y = WINDOW_HEIGHT - PLAYER_HEIGHT - yLimit;
         player.dy = 0;
         player.isJumping = false;
     }
-    if (player.y == WINDOW_HEIGHT - PLAYER_HEIGHT - 60)
+    if (player.y == WINDOW_HEIGHT - PLAYER_HEIGHT - yLimit)
     {
         player.jumpCount = 0;
     }
 }
 
 // Function to update the enemy's position and state
-void updateEnemy() {
-    SDL_Rect collPlayer = {player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT};
-    SDL_Rect collEnemy = {enemy.x, 0, ENEMY_WIDTH, ENEMY_HEIGHT};
+void updateEnemy()
+{
     // Enemy movement towards the player
-    if (player.x > enemy.x) {
-        enemy.x += ENEMYSPEED; // when the player is to the right of the enemy
-        enemy.isMovingRight = true;
-        enemy.isMovingLeft = false;
-    }
-    else if (player.x < enemy.x) {
+    if (!checkCollision(player, enemy))
+    {
 
-        enemy.x -= ENEMYSPEED; // when the player is to the left of the enemy
-        enemy.isMovingRight = false;
-        enemy.isMovingLeft = true;
-    }
+        if (player.x > enemy.x)
+        {
+            enemy.x += ENEMYSPEED; // when the player is to the right of the enemy
+            enemy.isMovingRight = true;
+            enemy.isMovingLeft = false;
+        }
+        else if (player.x < enemy.x)
+        {
 
-    // if player jumps enemy also jumps
-    if (player.isJumping) {
-        enemy.isJumping = true;
-    }
-    else {
-        enemy.isJumping = false;
+            enemy.x -= ENEMYSPEED; // when the player is to the left of the enemy
+            enemy.isMovingRight = false;
+            enemy.isMovingLeft = true;
+        }
+
+        // if player jumps enemy also jumps
+        if (player.isJumping)
+        {
+            enemy.isJumping = true;
+        }
+        else
+        {
+            enemy.isJumping = false;
+        }
     }
 }
 
@@ -144,21 +162,24 @@ void checkWin() {
 
 //  Main function where the game loop runs
 int main(int argc, char *argv[]) {
-        enemy.y = 300;
-        enemy.enemyWidth = 125;
-        enemy.enemyHeight = 130;
-        enemy.frameNum = 6;
-        enemy.rowNum = 1;
-        enemy.bendingType = 1;
+        // enemy.y = 300;
+        // enemy.enemyWidth = 125;
+        // enemy.enemyHeight = 130;
+        // enemy.frameNum = 6;
+        // enemy.rowNum = 1;
+        // enemy.bendingType = 1;
     setup();
    // playVideo();
     enemy.bendingType = 1;  
     SDL_TimerID timerId = SDL_AddTimer(1500, enemyBendingInterval, nullptr);
     while (gameisRunning) {
         SDL_RenderClear(renderer);
-        if(enemyCollision()) bounce();
+        if(checkCollision(player, enemy)) bounce();
         if(wallCollision()) dont();
 
+        if (checkCollision(player, enemy)) {
+            printf("collision!\n");
+        }
         checkWin();
 
         if (gameState == MENU) {

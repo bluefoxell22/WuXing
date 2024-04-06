@@ -7,18 +7,6 @@ void resetGameState();
 void enemyAttack();
 void playerAttack();
 
-bool enemyCollision() {
-    if(enemyDir == 1){
-        if(enemy.x <= player.x + PLAYER_WIDTH/1.7 && player.y+PLAYER_HEIGHT >= enemy.y+ENEMY_HEIGHT){
-                return true;
-        }
-    }else if((enemy.x + ENEMY_WIDTH/1.7 >= player.x && enemy.x+ ENEMY_WIDTH/1.7 <= player.x + PLAYER_WIDTH/1.7) && player.y+PLAYER_HEIGHT >= enemy.y+ENEMY_HEIGHT) {
-        return true;
-    }
-    // No collision
-    return false;
-}
-
 bool enemyCollisionBending(SDL_Rect dstattack, SDL_Rect srcattack, int dir) {
     if(dir == 1){
         if(dstattack.x <= player.x + PLAYER_WIDTH/2 && player.y+PLAYER_HEIGHT >= dstattack.y+srcattack.h){

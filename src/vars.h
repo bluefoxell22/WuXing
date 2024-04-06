@@ -12,21 +12,21 @@ const int WINDOW_WIDTH = 1080;
 const int WINDOW_HEIGHT = 700;
 const int PLAYER_WIDTH = 270;
 const int PLAYER_HEIGHT = 270;
-const int FRAME_WIDTH = 100;  // Width of each frame in the sprite sheet
-const int FRAME_HEIGHT = 100; // Height of each frame in the sprite sheet
+const int FRAME_WIDTH = 120;  // Width of each frame in the sprite sheet
+const int FRAME_HEIGHT = 120; // Height of each frame in the sprite sheet
 const int ATTACK_RANGE = 300; // 假设敌人攻击范围为100像素
-const int JUMP_FORCE = 20;
+const int JUMP_FORCE = 23;
 const int NUM_FRAMES = 8; // Number of animation frames in the sprite sheet
 const int PLAYERSPEED = 6;
 const int ENEMYSPEED = 1;
 const int GRAVITY = 1;
 const char *filename = "./assets/main_menu.mp4";
 
+int ENEMY_WIDTH = 370;
+int ENEMY_HEIGHT = 370;
 bool gameisRunning = true;
 int playerDir = 2;
 int enemyDir = 1;
-int ENEMY_WIDTH = 350;
-int ENEMY_HEIGHT = 350;
 bool on = false;
 bool timer = false;
 int fT1;
@@ -43,6 +43,8 @@ bool isLosed = false;
 bool isWin = false;
 bool mapRendered = false; // 在函数外部定义，用于跟踪latermap是否已经完全渲染
 Uint32 lastKeyPressTime = 0;
+int yLimit = 120;
+const int COLLISION_BUFFER = 230;
 
 enum GameState
 {
@@ -160,7 +162,7 @@ struct Bending
 };
 
 Character player = {100, 100, 0, 0, false, false, false, 0, 100, false}; // Initialize the player object
-Enemy enemy = {500, 370, 0, 0, false, false, false, 0, 100, false, 0, 55, 104, 7, 0};
+Enemy enemy = {500, 280, 0, 0, false, false, false, 0, 100, false, 0, 130, 142, 7, 2};
 
 Bending playerbend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
 Bending enemybend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
