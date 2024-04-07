@@ -39,7 +39,7 @@ int enemyBedningAnimation(bool con, int rowNum, int w, int h) {
 }
 
 int enemybending() {
-    static int initialX = enemy.x + 200;
+    static int initialX = enemy.x + 150;
     static int initialY = enemy.y;
     static int initialDir = enemyDir;
     static Uint32 bendingStartTime = SDL_GetTicks(); // Get the starting time of the bending action
@@ -61,6 +61,7 @@ int enemybending() {
 
     // Enemy bending animation
     enemy.rowNum = 4;
+    enemy.frameNum = 4;
     enemy.enemyHeight = 134;
 
     if (enemybend.bending != 0) {
@@ -78,6 +79,7 @@ int enemybending() {
         initialX = enemy.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
         initialDir = enemyDir;
         enemy.rowNum = 2;
+        enemy.frameNum = 8;
         enemy.enemyHeight = 140;
         bendingStartTime = SDL_GetTicks(); // Reset the starting time when bending is finished
     }

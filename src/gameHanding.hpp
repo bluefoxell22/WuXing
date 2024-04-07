@@ -31,10 +31,10 @@ void changeEnemy() {
     }
     else if(mission == FIRST) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
-        enemy.enemyWidth = 78;
-        enemy.enemyHeight = 56;
-        enemy.frameNum = 5;
-        enemy.rowNum = 1;
+        enemy.enemyWidth = 130;
+        enemy.enemyHeight = 140;
+        enemy.frameNum = 8;
+        enemy.rowNum = 2;
         enemy.bendingType = 2;
     }
     else if(mission == SECOND) {

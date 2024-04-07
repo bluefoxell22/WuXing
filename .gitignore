@@ -4,3 +4,5 @@ main.o
 vendor
 MakeFile
 bin/debug/assets
+bin/debug/SDL2_image.dll
+bin/debug/SDL2.dll
