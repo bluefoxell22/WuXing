@@ -30,21 +30,30 @@ bool wallCollision() {
     return false;
 }
 
-int enemybending(){
+int enemyBedningAnimation(bool con, int rowNum, int w, int h) {
+    if(con) {
+
+    }else {
+
+    }
+}
+
+int enemybending() {
     static int initialX = enemy.x + 200;
     static int initialY = enemy.y;
     static int initialDir = enemyDir;
     static Uint32 bendingStartTime = SDL_GetTicks(); // Get the starting time of the bending action
-    int elapsedTicks = SDL_GetTicks() - bendingStartTime;
+    Uint32 currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - bendingStartTime) / 500.0f;
+
+    int elapsedTicks = static_cast<int>(deltaTime * 1000); // Convert deltaTime to milliseconds
     int frameIndex = (elapsedTicks / enemybend.v1) % enemybend.frame_number;
     SDL_Rect bend = {frameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height}; // Calculate the source rectangle using the elapsed time
     int totalX = initialX + ((initialDir == 2) ? enemybend.frame_width / 2 : -enemybend.frame_width / 2) * (elapsedTicks / enemybend.v2);
     SDL_Rect dstRect = {totalX, initialY, 272, 170}; // Use initialY as the y-coordinate
 
-    if (timer)
-    {
-        if (enemyCollisionBending(dstRect, bend, initialDir))
-        {
+    if (timer) {
+        if (enemyCollisionBending(dstRect, bend, initialDir)) {
             enemyAttack();
             timer = false;
         }
@@ -52,33 +61,27 @@ int enemybending(){
 
     // Enemy bending animation
     enemy.rowNum = 4;
-    enemy.enemyHeight = 130;
+    enemy.enemyHeight = 134;
 
-    if (enemybend.bending != 0)
-    {
-        if (totalX >= (initialX + enemybend.frame_width / 2 * (enemybend.frame_number - 2)) || totalX <= (initialX - enemybend.frame_width / 2 * (enemybend.frame_number - 2)))
-        {
+    if (enemybend.bending != 0) {
+        if (totalX >= (initialX + enemybend.frame_width / 2 * (enemybend.frame_number - 2)) || totalX <= (initialX - enemybend.frame_width / 2 * (enemybend.frame_number - 2))) {
             enemybend.bending = 0;
             bendingStartTime = SDL_GetTicks(); // Reset the starting time when bending is finished
             // return interval;
         }
-        if (initialDir == enemybend.inverseDir)
-        {
-
+        if (initialDir == enemybend.inverseDir) {
             SDL_RenderCopyEx(renderer, enemybend.texture, &bend, &dstRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-        }
-        else
-        {
+        } else {
             SDL_RenderCopy(renderer, enemybend.texture, &bend, &dstRect);
         }
-    }
-    else
-    {
+    } else {
         initialX = enemy.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
         initialDir = enemyDir;
-        bendingStartTime = SDL_GetTicks(); // Reset the starting time when bending is finished
         enemy.rowNum = 2;
+        enemy.enemyHeight = 140;
+        bendingStartTime = SDL_GetTicks(); // Reset the starting time when bending is finished
     }
+
     return 0;
 }
 
@@ -101,9 +104,10 @@ int bendingSkill(int& bending, SDL_Texture* texture) {
     static int initialY = player.y + 64;
     static int initialDir = playerDir;
     static Uint32 bendingStartTime = SDL_GetTicks();
-    int elapsedTicks = SDL_GetTicks() - bendingStartTime;
+    Uint32 currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - bendingStartTime) / 500.0f;
 
-    // Adjust timing variables for faster animation
+    int elapsedTicks = static_cast<int>(deltaTime * 1000); // Convert deltaTime to milliseconds
     int frameIndex = (elapsedTicks / (playerbend.v1 / 2)) % playerbend.frame_number; // Increase the speed by dividing v1 by 2 and cycling through frames quickly
     int totalX = initialX + ((initialDir == 2) ? playerbend.frame_width / 2 : -playerbend.frame_width / 2) * (elapsedTicks / (playerbend.v2 / 2)); // Increase the speed by dividing v2 by 2
 

@@ -162,7 +162,7 @@ struct Bending
 };
 
 Character player = {100, 100, 0, 0, false, false, false, 0, 100, false}; // Initialize the player object
-Enemy enemy = {500, 280, 0, 0, false, false, false, 0, 100, false, 0, 130, 142, 7, 2};
+Enemy enemy = {500, 280, 0, 0, false, false, false, 0, 100, false, 0, 130, 140, 7, 2};
 
 Bending playerbend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
 Bending enemybend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};

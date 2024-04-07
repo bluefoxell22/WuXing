@@ -172,68 +172,51 @@ void renderPlayer() {
 void renderEnemy() {
     int enemyWidth = 55;
     SDL_Rect dstrectEnemy = {enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT};
-    // SDL_Rect srcRect = {fT4 * enemyWidth, 0, enemyWidth, 104};        // walk
-    SDL_Rect srcRect = {fT4 * enemy.enemyWidth, enemy.rowNum* enemy.enemyHeight, enemy.enemyWidth, enemy.enemyHeight};        // walk
+    SDL_Rect srcRect = {fT4 * enemy.enemyWidth, enemy.rowNum * enemy.enemyHeight, enemy.enemyWidth, enemy.enemyHeight}; // walk
     SDL_Rect srcRect2 = {fT5 * enemyWidth, 9 * 104, enemyWidth, 104}; // remain still
     SDL_Rect srcRect3 = {fT6 * enemyWidth, 2 * 104, enemyWidth, 104}; // jump
     SDL_Rect bend = {fT7 * enemyWidth, 1 * 104, enemyWidth, 104}; // attack1
     static Uint32 StartTime = SDL_GetTicks();
-    fT4 = ((SDL_GetTicks() - StartTime) / 150) % enemy.frameNum;
-    fT5 = (SDL_GetTicks() / 150) % 2;
-    fT6 = ((SDL_GetTicks() - StartTime) / 150) % 10;
-    fT7 = ((SDL_GetTicks() - StartTime) / 150) % 11;
+
+    Uint32 currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - StartTime) / 150.0f;
+
+    fT4 = static_cast<int>(deltaTime) % enemy.frameNum;
+    fT5 = static_cast<int>(currentTime / 150) % 2;
+    fT6 = static_cast<int>(deltaTime) % 10;
+    fT7 = static_cast<int>(deltaTime) % 11;
 
     SDL_RendererFlip flipType = SDL_FLIP_NONE;
 
-    if (enemy.isMovingLeft || enemy.isMovingRight)
-    {
-        // Animation frames for walking
-        // Change every 150 ms
-        if (enemy.isMovingLeft)
-        {
+    if (enemy.isMovingLeft || enemy.isMovingRight) {
+        if (enemy.isMovingLeft) {
             SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect, &dstrectEnemy, 0, NULL, SDL_FLIP_HORIZONTAL);
             enemyDir = 1;
-        }
-        else
-        {
+        } else {
             SDL_RenderCopy(renderer, spriteSheet2, &srcRect, &dstrectEnemy);
             enemyDir = 2;
         }
-    }
-    else if (enemy.isJumping)
-    {
-        if (enemyDir == 1)
-        {
+    } else if (enemy.isJumping) {
+        if (enemyDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else
-        {
+        } else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect3, &dstrectEnemy, 0, NULL, flipType);
-    }
-    else if (enemy.bendingType != 0)
-    {
-        if(enemy.bendingType == 1){
-            if (enemyDir == 1)
-        {
-            flipType = SDL_FLIP_HORIZONTAL;
+    } else if (enemy.bendingType != 0) {
+        if (enemy.bendingType == 1) {
+            if (enemyDir == 1) {
+                flipType = SDL_FLIP_HORIZONTAL;
+            } else {
+                flipType = SDL_FLIP_NONE;
+            }
+            SDL_RenderCopyEx(renderer, spriteSheet2, &bend, &dstrectEnemy, 0, NULL, flipType);
         }
-        else
-        {
-            flipType = SDL_FLIP_NONE;
-        }
-        SDL_RenderCopyEx(renderer, spriteSheet2, &bend, &dstrectEnemy, 0, NULL, flipType);
-        }
-    }
-    else
-    {
-        // Default texture when standing still
+    } else {
         StartTime = SDL_GetTicks();
         if (enemyDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
-        }
-        else {
+        } else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect2, &dstrectEnemy, 0, NULL, flipType);
