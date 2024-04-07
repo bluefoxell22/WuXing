@@ -267,21 +267,17 @@ void handleInput() {
             if (event.key.repeat == 0) {
                 if (elapsedTime >= cooldown || (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)) {
             // Reset player.jumpCount when the player lands on the ground
-            if (player.isJumping && player.y + PLAYER_HEIGHT >= WINDOW_HEIGHT - yLimit)
+            // Reset player.jumpCount when the player lands on the ground
+            if (event.key.keysym.sym == SDLK_SPACE)
             {
-                // Player has landed, reset jump count
-                player.jumpCount = 0;
-                player.isJumping = false;
+                if (player.jumpCount < 2 || player.y + PLAYER_HEIGHT >= WINDOW_HEIGHT - yLimit)
+                {
+                    player.dy = -JUMP_FORCE;
+                    player.isJumping = true;
+                    player.jumpCount++;
+                }
             }
-            // Update the last key press time
-            lastKeyPressTime = currentTime;
-            if (event.key.keysym.sym == SDLK_SPACE && (player.jumpCount < 2 || player.y + PLAYER_HEIGHT >= WINDOW_HEIGHT - yLimit))
-            {
-                player.dy = -JUMP_FORCE;
-                player.isJumping = true;
-                player.jumpCount++;
-            }
-            if (event.key.keysym.sym == SDLK_LEFT) {
+                  if (event.key.keysym.sym == SDLK_LEFT) {
                 player.isMovingLeft = true;
             }
             if (event.key.keysym.sym == SDLK_RIGHT) {

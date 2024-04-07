@@ -34,54 +34,51 @@ int enemybending(){
     static int initialX = enemy.x + 200;
     static int initialY = enemy.y;
     static int initialDir = enemyDir;
-    static Uint32 bendingStartTime = SDL_GetTicks();  // Get the starting time of the bending action
+    static Uint32 bendingStartTime = SDL_GetTicks(); // Get the starting time of the bending action
     int elapsedTicks = SDL_GetTicks() - bendingStartTime;
     int frameIndex = (elapsedTicks / enemybend.v1) % enemybend.frame_number;
-    SDL_Rect bend = { frameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height };  // Calculate the source rectangle using the elapsed time
+    SDL_Rect bend = {frameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height}; // Calculate the source rectangle using the elapsed time
     int totalX = initialX + ((initialDir == 2) ? enemybend.frame_width / 2 : -enemybend.frame_width / 2) * (elapsedTicks / enemybend.v2);
-    SDL_Rect dstRect = { totalX, initialY, 272, 170 }; // Use initialY as the y-coordinate
-   if(timer) {
-        if(enemyCollisionBending(dstRect, bend, initialDir))
+    SDL_Rect dstRect = {totalX, initialY, 272, 170}; // Use initialY as the y-coordinate
+
+    if (timer)
+    {
+        if (enemyCollisionBending(dstRect, bend, initialDir))
         {
             enemyAttack();
             timer = false;
         }
-   }
-        
-    // Check if the first animation has finished
-    // if (enemybend.bending == 0 && frameIndex == (enemybend.frame_number-1)) {
-    //     // Start the inverse animation
-    //     printf("lol\n");
-    //     enemybend.bending = 1;
-    //     bendingStartTime = SDL_GetTicks();  // Reset the starting time for the inverse animation
-    //    // initialX = totalX; // Update initialX to the current position
-    //     initialDir = (initialDir == 1) ? 2 : 1; // Invert the direction
-    // }
+    }
 
-    // // Calculate the frame index for the inverse animation
-    // int inverseFrameIndex = (enemybend.frame_number-1) - frameIndex;
-    // SDL_Rect inverseSrcRect = { inverseFrameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height };
+    // Enemy bending animation
+    enemy.rowNum = 4;
+    enemy.enemyHeight = 130;
 
-    if (enemybend.bending != 0) {
-        if (totalX >= (initialX + enemybend.frame_width / 2 * (enemybend.frame_number-2)) || totalX <= (initialX - enemybend.frame_width / 2* (enemybend.frame_number-2))) {
+    if (enemybend.bending != 0)
+    {
+        if (totalX >= (initialX + enemybend.frame_width / 2 * (enemybend.frame_number - 2)) || totalX <= (initialX - enemybend.frame_width / 2 * (enemybend.frame_number - 2)))
+        {
             enemybend.bending = 0;
-            bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
-            //return interval;
+            bendingStartTime = SDL_GetTicks(); // Reset the starting time when bending is finished
+            // return interval;
         }
-        if (initialDir == enemybend.inverseDir) {
-        
-            SDL_RenderCopyEx(renderer,enemybend.texture, &bend, &dstRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+        if (initialDir == enemybend.inverseDir)
+        {
+
+            SDL_RenderCopyEx(renderer, enemybend.texture, &bend, &dstRect, 0, NULL, SDL_FLIP_HORIZONTAL);
         }
-        else {
+        else
+        {
             SDL_RenderCopy(renderer, enemybend.texture, &bend, &dstRect);
         }
     }
-    else {
+    else
+    {
         initialX = enemy.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
         initialDir = enemyDir;
-        bendingStartTime = SDL_GetTicks();  // Reset the starting time when bending is finished
+        bendingStartTime = SDL_GetTicks(); // Reset the starting time when bending is finished
+        enemy.rowNum = 2;
     }
-
     return 0;
 }
 

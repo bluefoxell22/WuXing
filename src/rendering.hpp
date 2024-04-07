@@ -285,6 +285,7 @@ void  renderRealHelp(SDL_Renderer* renderer) {
 }
 
 void  renderYouWin(SDL_Renderer* renderer) {
+    SDL_SetTextureAlphaMod(youwin, 0);
     for (int i = 0; i <=255; i++) {
         SDL_RenderCopy(renderer, backgroundTexture, NULL, &rect);
         SDL_RenderCopy(renderer, youwin, NULL, &youwinRect);

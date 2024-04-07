@@ -162,12 +162,7 @@ void checkWin() {
 
 //  Main function where the game loop runs
 int main(int argc, char *argv[]) {
-        // enemy.y = 300;
-        // enemy.enemyWidth = 125;
-        // enemy.enemyHeight = 130;
-        // enemy.frameNum = 6;
-        // enemy.rowNum = 1;
-        // enemy.bendingType = 1;
+
     setup();
    // playVideo();
     enemy.bendingType = 1;  
