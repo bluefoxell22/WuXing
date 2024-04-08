@@ -128,6 +128,18 @@ Uint32 enemyBendingInterval(Uint32 interval, void* param) {
         enemybend.v1 = 210;
         enemybend.v2 = 420;
     }
+    else if (enemy.bendingType == 5)
+    {
+        enemybend.bending = 1;
+        enemybend.frame_number = 5;
+        enemybend.frame_Y = 0;
+        enemybend.frame_width = 192;
+        enemybend.frame_height = 192;
+        enemybend.texture = waterlightSheet;
+        enemybend.inverseDir = 1;
+        enemybend.v1 = 210;
+        enemybend.v2 = 315;
+    }
     on = (on == true) ? false : true;
     return interval;
 }

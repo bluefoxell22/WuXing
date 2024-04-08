@@ -260,67 +260,97 @@ void handleInput() {
                 return;
             }
         }
-        if (event.type == SDL_KEYDOWN) {
-            if (event.key.repeat == 0) {
-                if (elapsedTime >= cooldown || (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)) {
-            // Reset player.jumpCount when the player lands on the ground
-            // Reset player.jumpCount when the player lands on the ground
-            if (event.key.keysym.sym == SDLK_SPACE)
+        else if (event.type == SDL_KEYDOWN)
+        {
+            if (event.key.repeat == 0)
             {
-                if (player.jumpCount < 2 || player.y + PLAYER_HEIGHT >= WINDOW_HEIGHT - yLimit)
+                // Check if the cooldown has expired or if it's a specific key (e.g., SDLK_LEFT or SDLK_RIGHT)
+                if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)
                 {
-                    player.dy = -JUMP_FORCE;
-                    player.isJumping = true;
-                    player.jumpCount++;
+                    // Reset player.jumpCount when the player lands on the ground
+                    if (event.key.keysym.sym == SDLK_SPACE)
+                    {
+                        if (player.jumpCount < 2 || player.y + PLAYER_HEIGHT >= WINDOW_HEIGHT - yLimit) {
+                            player.dy = -JUMP_FORCE;
+                            player.isJumping = true;
+                            player.jumpCount++;
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_LEFT) {
+                        player.isMovingLeft = true;
+                    }
+                    if (event.key.keysym.sym == SDLK_RIGHT) {
+                        player.isMovingRight = true;
+                    }
+                    if (event.key.keysym.sym == SDLK_e) {
+                        // Perform action if cooldown has expired or it's a specific key
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_e) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*fireSheet, 10, 310, 53, 51, 1, 125, 125);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime; // Update the last key press time
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_r) {
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_r) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*waterSheet, 5, 0, 192, 192, 2, 210, 315);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime;
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_f) {
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_f) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*earthSheet, 5, 0, 192, 192, 1, 210, 420);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime;
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_g) {
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_g) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*windSheet, 5, 0, 192, 200, 1, 210, 315);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime;
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_h) {
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_h) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*lightSheet, 5, 192, 192, 192, 1, 210, 315);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime;
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_v)
+                    {
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_v) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*firelightSheet, 5, 0, 192, 192, 1, 210, 315);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime;
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_b)
+                    {
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_b) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*waterlightSheet, 5, 384, 192, 192, 1, 210, 315);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime;
+                        }
+                    }
+                    if (event.key.keysym.sym == SDLK_n)
+                    {
+                        if (elapsedTime >= cooldown || event.key.keysym.sym == SDLK_n) {
+                            player.playerAttack = true;
+                            setPlayerBendProperties(*firewaterSheet, 5, 0, 192, 192, 1, 210, 315);
+                            bendingSkill(playerbend.bending, playerbend.texture);
+                            lastKeyPressTime = currentTime;
+                        }
+                    }
                 }
-            }
-                  if (event.key.keysym.sym == SDLK_LEFT) {
-                player.isMovingLeft = true;
-            }
-            if (event.key.keysym.sym == SDLK_RIGHT) {
-                player.isMovingRight = true;
-            }
-            if(event.key.keysym.sym == SDLK_e){
-                player.playerAttack = true;
-                setPlayerBendProperties(*fireSheet, 10, 310, 53, 51, 1, 125, 125);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            if(event.key.keysym.sym == SDLK_r){
-                player.playerAttack = true;
-                setPlayerBendProperties(*waterSheet, 5, 0, 192, 192, 2, 210, 315);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            if(event.key.keysym.sym == SDLK_f){
-                player.playerAttack = true;
-                setPlayerBendProperties(*earthSheet, 5, 0, 192, 192, 1, 210, 420);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            if(event.key.keysym.sym == SDLK_g){
-                player.playerAttack = true;
-                setPlayerBendProperties(*windSheet, 5, 0, 192, 200, 1, 210, 315);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            if(event.key.keysym.sym == SDLK_h){
-                player.playerAttack = true;
-                setPlayerBendProperties(*lightSheet, 5, 192, 192, 192, 1, 210, 315);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            if(event.key.keysym.sym == SDLK_v){
-                player.playerAttack = true;
-                setPlayerBendProperties(*firelightSheet, 5, 0, 192, 192, 1, 210, 315);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            if(event.key.keysym.sym == SDLK_b){
-                player.playerAttack = true;
-                setPlayerBendProperties(*waterlightSheet, 5, 384, 192, 192, 1, 210, 315);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            if(event.key.keysym.sym == SDLK_n){
-                player.playerAttack = true;
-                setPlayerBendProperties(*firewaterSheet, 5, 0, 192, 192, 1, 210, 315);
-                bendingSkill(playerbend.bending,playerbend.texture);
-            }
-            }
             }
         }
         if (event.type == SDL_KEYUP) {

@@ -30,13 +30,13 @@ bool wallCollision() {
     return false;
 }
 
-int enemyBedningAnimation(bool con, int rowNum, int w, int h) {
-    if(con) {
+// int enemyBedningAnimation(bool con, int rowNum, int w, int h) {
+//     if(con) {
 
-    }else {
+//     }else {
 
-    }
-}
+//     }
+// }
 
 int enemybending() {
     static int initialX = enemy.x;
@@ -107,7 +107,7 @@ int bendingSkill(int& bending, SDL_Texture* texture) {
     static int initialDir = playerDir;
     static Uint32 bendingStartTime = SDL_GetTicks();
     Uint32 currentTime = SDL_GetTicks();
-    float deltaTime = (currentTime - bendingStartTime) / 500.0f;
+    float deltaTime = (currentTime - bendingStartTime) / 700.0f;
 
     int elapsedTicks = static_cast<int>(deltaTime * 1000); // Convert deltaTime to milliseconds
     int frameIndex = (elapsedTicks / (playerbend.v1 / 2)) % playerbend.frame_number; // Increase the speed by dividing v1 by 2 and cycling through frames quickly

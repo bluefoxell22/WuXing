@@ -36,7 +36,7 @@ int fT4;
 int fT5;
 int fT6;
 int fT7;
-int playerDamage = 8;
+int playerDamage = 6;
 bool isPaused = false;
 bool renderMap = false;
 bool isLosed = false;
