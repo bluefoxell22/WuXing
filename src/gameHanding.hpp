@@ -24,7 +24,7 @@ void changeEnemy() {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
         // enemy.enemyWidth = 78;
         // enemy.enemyHeight = 56;
-        enemy.walkingFrameNum = 7;
+        enemy.walkingFrameNum = 8;
         enemy.rowNum = 0;
         enemy.bendingType = 2;
     }
@@ -50,6 +50,7 @@ void changeEnemy() {
         // enemy.enemyHeight = 152;
         enemy.walkingFrameNum = 8;
         enemy.rowNum = 2;
+        enemy.bendingType = 5;
     }
     else if(mission == FIFTH) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface6);

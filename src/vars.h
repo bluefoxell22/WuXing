@@ -76,14 +76,15 @@ GameState gameState = MENU;
 int mission = ZERO;
 
 // SDL variables for window, renderer, and textures
-SDL_Surface *surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
-SDL_Surface *enemySurface1 = IMG_Load("./assets/sheet7.png");
-SDL_Surface *enemySurface2 = IMG_Load("./assets/enemySheet8.png");
-SDL_Surface *enemySurface3 = IMG_Load("./assets/enemySheet9.png");
-SDL_Surface *enemySurface4 = IMG_Load("./assets/enemySheet10.png");
-SDL_Surface *enemySurface5 = IMG_Load("./assets/enemySheet11.png");
-SDL_Surface *enemySurface6 = IMG_Load("./assets/enemySheet12.png");
-SDL_Surface *enemySurface7 = IMG_Load("./assets/enemySheet13.png");
+SDL_Surface *surfacePlayer = IMG_Load("./assets/sheet4.png");
+SDL_Surface *enemySurface1 = IMG_Load("./assets/enemySheet1.png");
+SDL_Surface *enemySurface2 = IMG_Load("./assets/enemySheet2.png");
+SDL_Surface *enemySurface3 = IMG_Load("./assets/enemySheet3.png");
+SDL_Surface *enemySurface4 = IMG_Load("./assets/enemySheet4.png");
+SDL_Surface *enemySurface5 = IMG_Load("./assets/enemySheet5.png");
+SDL_Surface *enemySurface6 = IMG_Load("./assets/enemySheet6.png");
+SDL_Surface *enemySurface7 = IMG_Load("./assets/enemySheet7.png");
+SDL_Surface *enemySurface8 = IMG_Load("./assets/enemySheet8.png");
 
 // SDL variables for window, renderer, and textures
 SDL_Window *window = nullptr;
@@ -190,17 +191,17 @@ struct Bending
 };
 
 Character player = {100, 100, 0, 0, false, false, false, 0, 100, false}; // Initialize the player object
-Enemy enemy = {500, 310, 0, 0, false, false, false, 0, 100, false, 0, 130, 128, 8, 4, 2};
+Enemy enemy = {500, 310, 0, 0, false, false, false, 0, 100, false, 1, 130, 128, 8, 4, 2};
 
 Bending playerbend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
 Bending enemybend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
 
 SDL_Rect playButton = {400, 360, 280, 60};
-SDL_Rect logoRect = {(WINDOW_WIDTH-260)/2, 10, 260, 260};
+SDL_Rect logoRect = {(WINDOW_WIDTH - 260) / 2, 10, 260, 260};
 SDL_Rect heartRect1 = {0, 0, 65, 65};
 SDL_Rect heartRect2 = {650, 0, 65, 65};
-SDL_Rect helpButton = {(WINDOW_WIDTH-280)/2, 465, 280, 60};
-SDL_Rect settingrButton = {(WINDOW_WIDTH-280)/2, 570, 280, 60};
+SDL_Rect helpButton = {(WINDOW_WIDTH - 280) / 2, 465, 280, 60};
+SDL_Rect settingrButton = {(WINDOW_WIDTH - 280) / 2, 570, 280, 60};
 SDL_Rect returnbackButton = {WINDOW_WIDTH - 200, 10, 120, 120};
 SDL_Rect youwinRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 SDL_Rect rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};

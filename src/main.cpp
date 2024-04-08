@@ -94,15 +94,15 @@ Uint32 enemyBendingInterval(Uint32 interval, void* param) {
     }
     else if (enemy.bendingType == 2)
     {
-        playerbend.bending = 1;
-        playerbend.frame_number = 5;
-        playerbend.frame_Y = 384;
-        playerbend.frame_width = 192;
-        playerbend.frame_height = 192;
-        playerbend.texture = waterlightSheet;
-        playerbend.inverseDir = 1;
-        playerbend.v1 = 210;
-        playerbend.v2 = 315;
+        enemybend.bending = 1;
+        enemybend.frame_number = 5;
+        enemybend.frame_Y = 384;
+        enemybend.frame_width = 192;
+        enemybend.frame_height = 192;
+        enemybend.texture = waterlightSheet;
+        enemybend.inverseDir = 1;
+        enemybend.v1 = 210;
+        enemybend.v2 = 315;
     }
     else if (enemy.bendingType == 3)
     {
@@ -118,15 +118,15 @@ Uint32 enemyBendingInterval(Uint32 interval, void* param) {
     }
     else if (enemy.bendingType == 4)
     {
-        playerbend.bending = 1;
-        playerbend.frame_number = 5;
-        playerbend.frame_Y = 0;
-        playerbend.frame_width = 192;
-        playerbend.frame_height = 200;
-        playerbend.texture = windSheet;
-        playerbend.inverseDir = 1;
-        playerbend.v1 = 210;
-        playerbend.v2 = 420;
+        enemybend.bending = 1;
+        enemybend.frame_number = 5;
+        enemybend.frame_Y = 0;
+        enemybend.frame_width = 192;
+        enemybend.frame_height = 200;
+        enemybend.texture = windSheet;
+        enemybend.inverseDir = 1;
+        enemybend.v1 = 210;
+        enemybend.v2 = 420;
     }
     on = (on == true) ? false : true;
     return interval;
@@ -192,7 +192,6 @@ int main(int argc, char *argv[]) {
 
     setup();
    // playVideo();
-    enemy.bendingType = 1;
     spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface1);
     SDL_TimerID timerId = SDL_AddTimer(1500, enemyBendingInterval, nullptr);
     while (gameisRunning) {

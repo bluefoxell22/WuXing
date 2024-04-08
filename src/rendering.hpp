@@ -72,7 +72,7 @@ void setup() {
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, surfaceBackground);
     logoTexture = SDL_CreateTextureFromSurface(renderer, surfaceLogo);
     heartTexture = SDL_CreateTextureFromSurface(renderer, surfaceHeart);
-    spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfaceSpriteSheet1);
+    spriteSheet1 = SDL_CreateTextureFromSurface(renderer, surfacePlayer);
     fireSheet = SDL_CreateTextureFromSurface(renderer, surfaceFireSheet);
     spriteSheet2 = nullptr;
     // enemySheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
