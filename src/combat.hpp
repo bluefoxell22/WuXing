@@ -44,7 +44,7 @@ int enemybending() {
     static int initialDir = enemyDir;
     static Uint32 bendingStartTime = SDL_GetTicks(); // Get the starting time of the bending action
     Uint32 currentTime = SDL_GetTicks();
-    float deltaTime = (currentTime - bendingStartTime) / 500.0f;
+    float deltaTime = (currentTime - bendingStartTime) / 700.0f;
 
     int elapsedTicks = static_cast<int>(deltaTime * 1000); // Convert deltaTime to milliseconds
     int frameIndex = (elapsedTicks / enemybend.v1) % enemybend.frame_number;

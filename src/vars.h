@@ -10,8 +10,8 @@
 
 const int WINDOW_WIDTH = 1080;
 const int WINDOW_HEIGHT = 700;
-const int PLAYER_WIDTH = 270;
-const int PLAYER_HEIGHT = 270;
+const int PLAYER_WIDTH = 231;
+const int PLAYER_HEIGHT = 231;
 const int FRAME_WIDTH = 120;  // Width of each frame in the sprite sheet
 const int FRAME_HEIGHT = 120; // Height of each frame in the sprite sheet
 const int ATTACK_RANGE = 300; // 假设敌人攻击范围为100像素
@@ -22,8 +22,8 @@ const int ENEMYSPEED = 1;
 const int GRAVITY = 1;
 const char *filename = "./assets/main_menu.mp4";
 
-int ENEMY_WIDTH = 370;
-int ENEMY_HEIGHT = 370;
+int ENEMY_WIDTH = 320;
+int ENEMY_HEIGHT = 320;
 bool gameisRunning = true;
 int playerDir = 2;
 int enemyDir = 1;

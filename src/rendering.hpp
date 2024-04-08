@@ -207,7 +207,7 @@ void renderPlayer() {
 
 void renderEnemy() {
     SDL_Rect dstrectEnemy = {enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT};
-    SDL_Rect srcRect = {fT4 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight)+40, enemy.enemyWidth, enemy.enemyHeight}; // walk
+    SDL_Rect srcRect = {fT4 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight)+20, enemy.enemyWidth, enemy.enemyHeight}; // walk
     SDL_Rect srcRect2 = {fT5 * enemy.enemyWidth, 9 * enemy.enemyHeight, enemy.enemyWidth, 104}; // remain still
     SDL_Rect srcRect3 = {fT6 * enemy.enemyWidth, 2 * enemy.enemyHeight, enemy.enemyHeight, 104}; // jump
     SDL_Rect bend = {fT7 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight)+40, enemy.enemyWidth, enemy.enemyHeight}; // attack1
