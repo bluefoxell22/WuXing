@@ -20,45 +20,42 @@ void changeColor(SDL_Texture* imageTexture, SDL_Rect imageRect) {
 
 void changeEnemy() {
     printf("Mission:%d\n");
-    if(mission == ZERO) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface1);
-        enemy.enemyWidth = 100;
-        enemy.enemyHeight = 40;
-        enemy.frameNum = 6;
-        enemy.rowNum = 1;
-        enemy.bendingType = 1;
-        playerDamage = 5;
-    }
-    else if(mission == FIRST) {
+    if(mission == FIRST) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
-        enemy.enemyWidth = 130;
-        enemy.enemyHeight = 140;
-        enemy.frameNum = 8;
-        enemy.rowNum = 2;
+        // enemy.enemyWidth = 78;
+        // enemy.enemyHeight = 56;
+        enemy.walkingFrameNum = 7;
+        enemy.rowNum = 0;
         enemy.bendingType = 2;
     }
     else if(mission == SECOND) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface4);
-        enemy.enemyWidth = 160;
-        enemy.enemyHeight = 171;
-        enemy.frameNum = 8;
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface3);
+        // enemy.enemyWidth = 160;
+        // enemy.enemyHeight = 171;
+        enemy.walkingFrameNum = 8;
         enemy.rowNum = 1;
         enemy.bendingType = 3;
     }
     else if(mission == THIRD) {
-        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface5);
-        enemy.enemyWidth = 183;
-        enemy.enemyHeight = 140;
-        enemy.frameNum = 5;
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface4);
+        // enemy.enemyWidth = 183;
+        // enemy.enemyHeight = 140;
+        enemy.walkingFrameNum = 8;
         enemy.rowNum = 1;
         enemy.bendingType = 4;
     }
     else if(mission == FOURTH) {
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface5);
+        // enemy.enemyWidth = 157;
+        // enemy.enemyHeight = 152;
+        enemy.walkingFrameNum = 8;
+        enemy.rowNum = 2;
+    }
+    else if(mission == FIFTH) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface6);
-        enemy.enemyWidth = 157;
-        enemy.enemyHeight = 152;
-        enemy.frameNum = 6;
-        enemy.rowNum = 0;
+    }
+    else if(mission == SIXTH) {
+        spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface7);
     }
 }
 
@@ -72,7 +69,6 @@ void resetGameState() {
     player.jumpCount = 0;
     player.health = 100;
     // 敌人状态也被重置
-    spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface7);
     enemy.x = 500;
     enemy.y = 310;
     enemy.dx = 0;

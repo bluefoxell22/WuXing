@@ -46,6 +46,24 @@ void setup() {
     SDL_Surface* surfaceFifthWinMap = IMG_Load("./assets/Map10.png");
     SDL_Surface* surfaceSixthMap = IMG_Load("./assets/Map11.png");
     SDL_Surface* surfaceSixthWinMap = IMG_Load("./assets/Map12.png");
+
+    SDL_Surface* surfaceSeventhMap = IMG_Load("./assets/Map13.png");
+    SDL_Surface* surfaceSeventhWinMap = IMG_Load("./assets/Map14.png");
+    SDL_Surface* surfaceEightMap = IMG_Load("./assets/Map15.png");
+    SDL_Surface* surfaceEightWinMap = IMG_Load("./assets/Map16.png");
+    SDL_Surface* surfaceNinthMap = IMG_Load("./assets/Map17.png");
+    SDL_Surface* surfaceNinthWinMap = IMG_Load("./assets/Map18.png");
+    SDL_Surface* surfaceTenthMap = IMG_Load("./assets/Map19.png");
+    SDL_Surface* surfaceTenthWinMap = IMG_Load("./assets/Map20.png");
+    SDL_Surface* surfaceEleventhMap = IMG_Load("./assets/Map21.png");
+    SDL_Surface* surfaceEleventhWinMap = IMG_Load("./assets/Map22.png");
+    SDL_Surface* surfaceTwelvethMap = IMG_Load("./assets/Map23.png");
+    SDL_Surface* surfaceTwelvethWinMap = IMG_Load("./assets/Map24.png");
+    SDL_Surface* surfaceThirteenthMap = IMG_Load("./assets/Map25.png");
+    SDL_Surface* surfaceThirteenthWinMap = IMG_Load("./assets/Map26.png");
+    SDL_Surface* surfaceFourteenthMap = IMG_Load("./assets/Map27.png");
+    SDL_Surface* surfaceFourteenthWinMap = IMG_Load("./assets/Map28.png");
+    SDL_Surface* surfaceFifteenthWinMap = IMG_Load("./assets/Map29.png");
     SDL_Surface* surfaceYouWin = IMG_Load("./assets/youwin.jpg");
     SDL_Surface* surfaceHeart = IMG_Load("./assets/heart.png");
 
@@ -82,12 +100,30 @@ void setup() {
     secondwin = SDL_CreateTextureFromSurface(renderer, surfaceSecondWinMap);
     third = SDL_CreateTextureFromSurface(renderer, surfaceThirdMap);
     thirdwin = SDL_CreateTextureFromSurface(renderer, surfaceThirdWinMap);
-    forth = SDL_CreateTextureFromSurface(renderer, surfaceForthMap);
+    fourth = SDL_CreateTextureFromSurface(renderer, surfaceForthMap);
     forthwin = SDL_CreateTextureFromSurface(renderer, surfaceForthWinMap);
     fifth = SDL_CreateTextureFromSurface(renderer, surfaceFifthMap);
     fifthwin= SDL_CreateTextureFromSurface(renderer, surfaceFifthWinMap);
     sixth = SDL_CreateTextureFromSurface(renderer, surfaceSixthMap);
     sixthwin = SDL_CreateTextureFromSurface(renderer, surfaceSixthWinMap);
+
+    seventh = SDL_CreateTextureFromSurface(renderer, surfaceSeventhMap);
+    seventhwin = SDL_CreateTextureFromSurface(renderer, surfaceSeventhWinMap);
+    eight = SDL_CreateTextureFromSurface(renderer, surfaceEightMap);
+    eightwin = SDL_CreateTextureFromSurface(renderer, surfaceEightWinMap);
+    ninth = SDL_CreateTextureFromSurface(renderer, surfaceNinthMap);
+    ninthwin = SDL_CreateTextureFromSurface(renderer, surfaceNinthWinMap);
+    tenth = SDL_CreateTextureFromSurface(renderer, surfaceTenthMap);
+    tenthwin = SDL_CreateTextureFromSurface(renderer, surfaceTenthWinMap);
+    eleventh = SDL_CreateTextureFromSurface(renderer, surfaceEleventhMap);
+    eleventhwin = SDL_CreateTextureFromSurface(renderer, surfaceEleventhWinMap);
+    twelveth = SDL_CreateTextureFromSurface(renderer, surfaceTwelvethMap);
+    twelvethwin = SDL_CreateTextureFromSurface(renderer, surfaceTwelvethWinMap);
+    thirteenth = SDL_CreateTextureFromSurface(renderer, surfaceThirteenthMap);
+    thirteenthwin = SDL_CreateTextureFromSurface(renderer, surfaceThirteenthWinMap);
+    fourteenth = SDL_CreateTextureFromSurface(renderer, surfaceFourteenthMap);
+    fourteenthwin = SDL_CreateTextureFromSurface(renderer, surfaceFourteenthWinMap);
+    fifteenth = SDL_CreateTextureFromSurface(renderer, surfaceFifteenthWinMap);
     youwin = SDL_CreateTextureFromSurface(renderer, surfaceYouWin);
 }
 
@@ -170,21 +206,20 @@ void renderPlayer() {
 }
 
 void renderEnemy() {
-    int enemyWidth = 55;
     SDL_Rect dstrectEnemy = {enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT};
-    SDL_Rect srcRect = {fT4 * enemy.enemyWidth, enemy.rowNum * enemy.enemyHeight, enemy.enemyWidth, enemy.enemyHeight}; // walk
-    SDL_Rect srcRect2 = {fT5 * enemyWidth, 9 * 104, enemyWidth, 104}; // remain still
-    SDL_Rect srcRect3 = {fT6 * enemyWidth, 2 * 104, enemyWidth, 104}; // jump
-    SDL_Rect bend = {fT7 * enemyWidth, 1 * 104, enemyWidth, 104}; // attack1
+    SDL_Rect srcRect = {fT4 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight)+40, enemy.enemyWidth, enemy.enemyHeight}; // walk
+    SDL_Rect srcRect2 = {fT5 * enemy.enemyWidth, 9 * enemy.enemyHeight, enemy.enemyWidth, 104}; // remain still
+    SDL_Rect srcRect3 = {fT6 * enemy.enemyWidth, 2 * enemy.enemyHeight, enemy.enemyHeight, 104}; // jump
+    SDL_Rect bend = {fT7 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight)+40, enemy.enemyWidth, enemy.enemyHeight}; // attack1
     static Uint32 StartTime = SDL_GetTicks();
 
     Uint32 currentTime = SDL_GetTicks();
     float deltaTime = (currentTime - StartTime) / 150.0f;
 
-    fT4 = static_cast<int>(deltaTime) % enemy.frameNum;
-    fT5 = static_cast<int>(currentTime / 150) % 2;
+    fT4 = static_cast<int>(deltaTime) % enemy.walkingFrameNum;
+    fT5 = static_cast<int>(deltaTime) % 2;
     fT6 = static_cast<int>(deltaTime) % 10;
-    fT7 = static_cast<int>(deltaTime) % 11;
+    fT7 = static_cast<int>(deltaTime) % enemy.bendingFrameNum;
 
     SDL_RendererFlip flipType = SDL_FLIP_NONE;
 

@@ -61,20 +61,29 @@ int SECOND = 2;
 int THIRD = 3;
 int FOURTH = 4;
 int FIFTH = 5;
-int SIXTH = 5;
+int SIXTH = 6;
+int SEVENTH = 7;
+int EIGHT = 8;
+int NINTH = 9;
+int TENTH = 10;
+int ELEVENTH = 11;
+int TWELVETH = 12;
+int THIRTEENTH = 13;
+int FOURTEENTH = 14;
+int FIFTEENTH = 15;
 
 GameState gameState = MENU;
 int mission = ZERO;
 
 // SDL variables for window, renderer, and textures
 SDL_Surface *surfaceSpriteSheet1 = IMG_Load("./assets/sheet4.png");
-SDL_Surface *enemySurface1 = IMG_Load("./assets/sheet6.png");
-SDL_Surface *enemySurface2 = IMG_Load("./assets/enemySheet2.png");
-SDL_Surface *enemySurface3 = IMG_Load("./assets/enemySheet3.png");
-SDL_Surface *enemySurface4 = IMG_Load("./assets/enemySheet4.png");
-SDL_Surface *enemySurface5 = IMG_Load("./assets/enemySheet5.png");
-SDL_Surface *enemySurface6 = IMG_Load("./assets/enemySheet6.png");
-SDL_Surface *enemySurface7 = IMG_Load("./assets/sheet7.png");
+SDL_Surface *enemySurface1 = IMG_Load("./assets/sheet7.png");
+SDL_Surface *enemySurface2 = IMG_Load("./assets/enemySheet8.png");
+SDL_Surface *enemySurface3 = IMG_Load("./assets/enemySheet9.png");
+SDL_Surface *enemySurface4 = IMG_Load("./assets/enemySheet10.png");
+SDL_Surface *enemySurface5 = IMG_Load("./assets/enemySheet11.png");
+SDL_Surface *enemySurface6 = IMG_Load("./assets/enemySheet12.png");
+SDL_Surface *enemySurface7 = IMG_Load("./assets/enemySheet13.png");
 
 // SDL variables for window, renderer, and textures
 SDL_Window *window = nullptr;
@@ -107,12 +116,30 @@ SDL_Texture *second = nullptr;
 SDL_Texture *secondwin = nullptr;
 SDL_Texture *third = nullptr;
 SDL_Texture *thirdwin = nullptr;
-SDL_Texture *forth = nullptr;
+SDL_Texture *fourth = nullptr;
 SDL_Texture *forthwin = nullptr;
 SDL_Texture *fifth = nullptr;
 SDL_Texture *fifthwin = nullptr;
 SDL_Texture *sixth = nullptr;
 SDL_Texture *sixthwin = nullptr;
+SDL_Texture *seventh = nullptr;
+SDL_Texture *seventhwin = nullptr;
+SDL_Texture *eight = nullptr;
+SDL_Texture *eightwin = nullptr;
+SDL_Texture *ninth = nullptr;
+SDL_Texture *ninthwin = nullptr;
+SDL_Texture *tenth = nullptr;
+SDL_Texture *tenthwin = nullptr;
+SDL_Texture *eleventh = nullptr;
+SDL_Texture *eleventhwin = nullptr;
+SDL_Texture *twelveth = nullptr;
+SDL_Texture *twelvethwin = nullptr;
+SDL_Texture *thirteenth = nullptr;
+SDL_Texture *thirteenthwin = nullptr;
+SDL_Texture *fourteenth = nullptr;
+SDL_Texture *fourteenthwin = nullptr;
+SDL_Texture *fifteenth = nullptr;
+
 SDL_Texture *youwin = nullptr;
 SDL_Texture *logoTexture = nullptr;
 SDL_Texture *heartTexture = nullptr;
@@ -143,7 +170,8 @@ struct Enemy
     int bendingType;
     int enemyWidth;
     int enemyHeight;
-    int frameNum;
+    int walkingFrameNum;
+    int bendingFrameNum;
     int rowNum;
 };
 
@@ -162,7 +190,7 @@ struct Bending
 };
 
 Character player = {100, 100, 0, 0, false, false, false, 0, 100, false}; // Initialize the player object
-Enemy enemy = {500, 280, 0, 0, false, false, false, 0, 100, false, 0, 130, 140, 8, 2};
+Enemy enemy = {500, 310, 0, 0, false, false, false, 0, 100, false, 0, 130, 128, 8, 4, 2};
 
 Bending playerbend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
 Bending enemybend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};

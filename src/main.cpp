@@ -157,6 +157,33 @@ void checkWin() {
         else if(mission == FIFTH) {
             mission = SIXTH;
         }
+        else if(mission == SIXTH) {
+            mission = SEVENTH;
+        }
+        else if (mission == SEVENTH) {
+            mission = EIGHT;
+        }
+        else if (mission == EIGHT) {
+            mission = NINTH;
+        }
+        else if (mission == NINTH) {
+            mission = TENTH;
+        }
+        else if (mission == TENTH) {
+            mission = ELEVENTH;
+        }
+        else if (mission == ELEVENTH) {
+            mission = TWELVETH;
+        }
+        else if (mission == TWELVETH) {
+            mission = THIRTEENTH;
+        }
+        else if (mission == THIRTEENTH) {
+            mission = FOURTEENTH;
+        }
+        else if (mission == FOURTEENTH) {
+            mission = FIFTEENTH;
+        }
     }
 }
 
@@ -165,7 +192,8 @@ int main(int argc, char *argv[]) {
 
     setup();
    // playVideo();
-    enemy.bendingType = 1;  
+    enemy.bendingType = 1;
+    spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface1);
     SDL_TimerID timerId = SDL_AddTimer(1500, enemyBendingInterval, nullptr);
     while (gameisRunning) {
         SDL_RenderClear(renderer);
@@ -223,11 +251,11 @@ int main(int argc, char *argv[]) {
                 handleInputatMap();
             }
             else if (mission == THIRD) {
-                renderaMap(third, thirdwin, forth);
+                renderaMap(third, thirdwin, fourth);
                 handleInputatMap();
             }
             else if (mission == FOURTH) {
-                renderaMap(forth, forthwin, fifth);
+                renderaMap(fourth, forthwin, fifth);
                 handleInputatMap();
             }
             else if (mission == FIFTH) {
@@ -235,7 +263,39 @@ int main(int argc, char *argv[]) {
                 handleInputatMap();
             }
             else if (mission == SIXTH) {
-                renderaMap(sixth, sixthwin, sixthwin);
+                renderaMap(sixth, sixthwin, seventh);
+                handleInputatMap();
+            }
+            else if (mission == SEVENTH) {
+                renderaMap(seventh, seventhwin, eight);
+                handleInputatMap();
+            }
+            else if (mission == EIGHT) {
+                renderaMap(eight, eightwin, ninth);
+                handleInputatMap();
+            }
+            else if (mission == NINTH) {
+                renderaMap(ninth, ninth, tenth);
+                handleInputatMap();
+            }
+            else if (mission == TENTH) {
+                renderaMap(tenth, tenthwin, eleventh);
+                handleInputatMap();
+            }
+            else if (mission == ELEVENTH) {
+                renderaMap(eleventh, eleventhwin, twelveth);
+                handleInputatMap();
+            }
+            else if (mission == TWELVETH) {
+                renderaMap(twelveth, twelvethwin, thirteenth);
+                handleInputatMap();
+            }
+            else if (mission == THIRTEENTH) {
+                renderaMap(thirteenth, thirteenthwin, fourteenth);
+                handleInputatMap();
+            }
+            else if (mission == FOURTEENTH) {
+                renderaMap(fourteenth, fourteenthwin, fifteenth);
                 handleInputatMap();
             }
         }
