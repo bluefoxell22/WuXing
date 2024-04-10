@@ -6,3 +6,4 @@ MakeFile
 bin/debug/assets
 *.dll
 .editorconfig
+bin
