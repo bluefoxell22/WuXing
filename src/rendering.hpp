@@ -5,7 +5,7 @@ void setup() {
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Init(SDL_INIT_AUDIO);
     SDL_Init(SDL_INIT_TIMER);
-    // TTF_Init;
+    TTF_Init;
     //Mix_Init(MIX_INIT_MP3);                            // Initialize the audio library (for MP3 support)
     //Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024); // Open the audio device*/
 
@@ -14,10 +14,10 @@ void setup() {
     //Mix_Music *music = Mix_LoadMUS("./assets/m.mp3");
 
     // Load textures for the character facing left and right, and background
-    SDL_Surface *surfaceBackground = IMG_Load("./assets/background1.png");
-    SDL_Surface *surfaceLogo = IMG_Load("./assets/logo.png");
-    SDL_Surface *surfaceFireSheet = IMG_Load("./assets/fireball2.png");
-    SDL_Surface *surfaceHPBar = IMG_Load("./assets/hpBar.png");
+    SDL_Surface* surfaceBackground = IMG_Load("./assets/background1.png");
+    SDL_Surface* surfaceLogo = IMG_Load("./assets/logo.png");
+    SDL_Surface* surfaceFireSheet = IMG_Load("./assets/fireball2.png");
+    SDL_Surface* surfaceHPBar = IMG_Load("./assets/hpBar.png");
     SDL_Surface* surfaceWaterSheet = IMG_Load("./assets/water.png");
     SDL_Surface* surfaceEarthSheet = IMG_Load("./assets/earth.png");
     SDL_Surface* surfaceWindSheet = IMG_Load("./assets/wind.png");
@@ -103,7 +103,7 @@ void setup() {
     fourth = SDL_CreateTextureFromSurface(renderer, surfaceForthMap);
     forthwin = SDL_CreateTextureFromSurface(renderer, surfaceForthWinMap);
     fifth = SDL_CreateTextureFromSurface(renderer, surfaceFifthMap);
-    fifthwin= SDL_CreateTextureFromSurface(renderer, surfaceFifthWinMap);
+    fifthwin = SDL_CreateTextureFromSurface(renderer, surfaceFifthWinMap);
     sixth = SDL_CreateTextureFromSurface(renderer, surfaceSixthMap);
     sixthwin = SDL_CreateTextureFromSurface(renderer, surfaceSixthWinMap);
 
@@ -129,11 +129,11 @@ void setup() {
 
 // Function to render the background scene
 void renderScene() {
-    SDL_Rect bgRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-    SDL_Rect hpPlayerBarRect = {25, 12, 4 * player.health, 40};
-    SDL_Rect hpEnemyBarRect = {WINDOW_WIDTH - 400, 12, 4 * enemy.health, 40};
-    SDL_Rect dstTextRectPlayer = {0, 0, 50, 50};
-    SDL_Rect dstTextRectEnemy = {WINDOW_WIDTH-50, 0, 50, 50};
+    SDL_Rect bgRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+    SDL_Rect hpPlayerBarRect = { 25, 12, 4 * player.health, 40 };
+    SDL_Rect hpEnemyBarRect = { WINDOW_WIDTH - 400, 12, 4 * enemy.health, 40 };
+    SDL_Rect dstTextRectPlayer = { 0, 0, 50, 50 };
+    SDL_Rect dstTextRectEnemy = { WINDOW_WIDTH - 50, 0, 50, 50 };
     SDL_RenderCopy(renderer, backgroundTexture, NULL, &bgRect);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, &hpPlayerBarRect);
@@ -142,51 +142,56 @@ void renderScene() {
     SDL_RenderCopy(renderer, heartTexture, NULL, &heartRect2);
 
     // Render player health value
-    SDL_Color textColor = {255, 0, 0, 255}; // White color for the text
+    SDL_Color textColor = { 255, 0, 0, 255 }; // White color for the text
 }
 // Function to render the player character with animations
-void renderPlayer() {
-
-    SDL_Rect dstrectPlayer = {player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT};
-    SDL_Rect srcRect = {fT1 * 32, 3 * 32, 32, 32};
-    SDL_Rect srcRect2 = {fT2 * 32, 0, 32, 32};
-    SDL_Rect srcRect3 = {fT3 * 32, 4 * 32, 32, 32};
-    SDL_Rect bend = {fT1 * 32, 8 * 32, 32, 32};
+void renderPlayer()
+{
+    SDL_Rect dstrectPlayer = { player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT };
+    SDL_Rect srcRect = { fT1 * 32, 3 * 32, 32, 32 };
+    SDL_Rect srcRect2 = { fT2 * 32, 0, 32, 32 };
+    SDL_Rect srcRect3 = { fT3 * 32, 4 * 32, 32, 32 };
+    SDL_Rect bend = { fT1 * 32, 8 * 32, 32, 32 };
+    SDL_Rect block = { fT1 * 32, 8 * 32, 32, 32 };
     static Uint32 StartTime1 = SDL_GetTicks();
-    fT1 = ((SDL_GetTicks() - StartTime1) / 150) % 8;
-    fT2 = (SDL_GetTicks() / 150) % 2;
-    fT3 = ((SDL_GetTicks() - StartTime1) / 150) % 6;
+
+    Uint32 currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - StartTime1) / 150.0f;
+
+    fT1 = static_cast<int>(deltaTime) % 8;
+    fT2 = static_cast<int>(deltaTime) % 2;
+    fT3 = static_cast<int>(deltaTime) % 6;
 
     SDL_RendererFlip flipType = SDL_FLIP_NONE;
 
     if (player.isMovingLeft || player.isMovingRight)
     {
         // Animation frames for walking
-        if (player.isMovingLeft){
+        if (player.isMovingLeft) {
             SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect, &dstrectPlayer, 0, NULL, SDL_FLIP_HORIZONTAL);
             playerDir = 1;
         }
-        else{
+        else {
             SDL_RenderCopy(renderer, spriteSheet1, &srcRect, &dstrectPlayer);
             playerDir = 2;
         }
     }
     else if (player.isJumping)
     {
-        if (playerDir == 1){
+        if (playerDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         }
-        else{
+        else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect3, &dstrectPlayer, 0, NULL, flipType);
     }
     else if (playerbend.bending)
     {
-        if (playerDir == 1){
+        if (playerDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         }
-        else{
+        else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet1, &bend, &dstrectPlayer, 0, NULL, flipType);
@@ -195,22 +200,23 @@ void renderPlayer() {
     {
         // Default texture when standing still
         StartTime1 = SDL_GetTicks();
-        if (playerDir == 1){
+        if (playerDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
         }
-        else{
+        else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet1, &srcRect2, &dstrectPlayer, 0, NULL, flipType);
     }
 }
 
-void renderEnemy() {
-    SDL_Rect dstrectEnemy = {enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT};
-    SDL_Rect srcRect = {fT4 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight)+20, enemy.enemyWidth, enemy.enemyHeight}; // walk
-    SDL_Rect srcRect2 = {fT5 * enemy.enemyWidth, 9 * enemy.enemyHeight, enemy.enemyWidth, 104}; // remain still
-    SDL_Rect srcRect3 = {fT6 * enemy.enemyWidth, 2 * enemy.enemyHeight, enemy.enemyHeight, 104}; // jump
-    SDL_Rect bend = {fT7 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight)+40, enemy.enemyWidth, enemy.enemyHeight}; // attack1
+void renderEnemy()
+{
+    SDL_Rect dstrectEnemy = { enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT };
+    SDL_Rect srcRect = { fT4 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight) + 20, enemy.enemyWidth, enemy.enemyHeight }; // walk
+    SDL_Rect srcRect2 = { fT5 * enemy.enemyWidth, 9 * enemy.enemyHeight, enemy.enemyWidth, 104 }; // remain still
+    SDL_Rect srcRect3 = { fT6 * enemy.enemyWidth, 2 * enemy.enemyHeight, enemy.enemyHeight, 104 }; // jump
+    SDL_Rect bend = { fT7 * enemy.enemyWidth, (enemy.rowNum * enemy.enemyHeight) + 40, enemy.enemyWidth, enemy.enemyHeight }; // attack1
     static Uint32 StartTime = SDL_GetTicks();
 
     Uint32 currentTime = SDL_GetTicks();
@@ -227,31 +233,38 @@ void renderEnemy() {
         if (enemy.isMovingLeft) {
             SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect, &dstrectEnemy, 0, NULL, SDL_FLIP_HORIZONTAL);
             enemyDir = 1;
-        } else {
+        }
+        else {
             SDL_RenderCopy(renderer, spriteSheet2, &srcRect, &dstrectEnemy);
             enemyDir = 2;
         }
-    } else if (enemy.isJumping) {
+    }
+    else if (enemy.isJumping) {
         if (enemyDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
-        } else {
+        }
+        else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect3, &dstrectEnemy, 0, NULL, flipType);
-    } else if (enemy.bendingType != 0) {
+    }
+    else if (enemy.bendingType != 0) {
         if (enemy.bendingType == 1) {
             if (enemyDir == 1) {
                 flipType = SDL_FLIP_HORIZONTAL;
-            } else {
+            }
+            else {
                 flipType = SDL_FLIP_NONE;
             }
             SDL_RenderCopyEx(renderer, spriteSheet2, &bend, &dstrectEnemy, 0, NULL, flipType);
         }
-    } else {
+    }
+    else {
         StartTime = SDL_GetTicks();
         if (enemyDir == 1) {
             flipType = SDL_FLIP_HORIZONTAL;
-        } else {
+        }
+        else {
             flipType = SDL_FLIP_NONE;
         }
         SDL_RenderCopyEx(renderer, spriteSheet2, &srcRect2, &dstrectEnemy, 0, NULL, flipType);
@@ -293,18 +306,18 @@ void  renderSetting(SDL_Renderer* renderer) {
 }
 
 void  renderRealHelp(SDL_Renderer* renderer) {
-    
-    SDL_RenderCopy(renderer,realhelp, NULL, &rect);
+
+    SDL_RenderCopy(renderer, realhelp, NULL, &rect);
     if (isPaused == false) {
         SDL_SetTextureAlphaMod(returnback, 255);
         SDL_RenderCopy(renderer, returnback, NULL, &returnbackButton);
-    }    
-    
+    }
+
 }
 
 void  renderYouWin(SDL_Renderer* renderer) {
     SDL_SetTextureAlphaMod(youwin, 0);
-    for (int i = 0; i <=255; i++) {
+    for (int i = 0; i <= 255; i++) {
         SDL_RenderCopy(renderer, backgroundTexture, NULL, &rect);
         SDL_RenderCopy(renderer, youwin, NULL, &youwinRect);
         SDL_RenderPresent(renderer);
@@ -337,5 +350,5 @@ void renderaMap(SDL_Texture* backmap, SDL_Texture* backmappluswin, SDL_Texture* 
         }
     }
     SDL_RenderCopy(renderer, latermap, NULL, &rect);
-    
+
 }

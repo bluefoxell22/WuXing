@@ -1,7 +1,7 @@
 #include "./rendering.hpp"
 
 int bendingSkill(int& bending, SDL_Texture* texture);
-void setPlayerBendProperties(SDL_Texture &texture, int frame_num, int frame_Y, int frame_width, int frame_height, int invDir, int v1, int v2);
+void setPlayerBendProperties(SDL_Texture& texture, int frame_num, int frame_Y, int frame_width, int frame_height, int invDir, int v1, int v2);
 
 void changeColor(SDL_Texture* imageTexture, SDL_Rect imageRect) {
     // 设置图片颜色为暗色
@@ -13,14 +13,14 @@ void changeColor(SDL_Texture* imageTexture, SDL_Rect imageRect) {
         SDL_RenderPresent(renderer);
         SDL_SetTextureAlphaMod(imageTexture, i);
     }
-    
+
     // 暂停一段时间
         //SDL_Delay(20000);
 }
 
 void changeEnemy() {
     printf("Mission:%d\n");
-    if(mission == FIRST) {
+    if (mission == FIRST) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface2);
         // enemy.enemyWidth = 78;
         // enemy.enemyHeight = 56;
@@ -28,7 +28,7 @@ void changeEnemy() {
         enemy.rowNum = 0;
         enemy.bendingType = 2;
     }
-    else if(mission == SECOND) {
+    else if (mission == SECOND) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface3);
         // enemy.enemyWidth = 160;
         // enemy.enemyHeight = 171;
@@ -36,7 +36,7 @@ void changeEnemy() {
         enemy.rowNum = 1;
         enemy.bendingType = 3;
     }
-    else if(mission == THIRD) {
+    else if (mission == THIRD) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface4);
         // enemy.enemyWidth = 183;
         // enemy.enemyHeight = 140;
@@ -44,7 +44,7 @@ void changeEnemy() {
         enemy.rowNum = 1;
         enemy.bendingType = 4;
     }
-    else if(mission == FOURTH) {
+    else if (mission == FOURTH) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface5);
         // enemy.enemyWidth = 157;
         // enemy.enemyHeight = 152;
@@ -52,10 +52,10 @@ void changeEnemy() {
         enemy.rowNum = 2;
         enemy.bendingType = 5;
     }
-    else if(mission == FIFTH) {
+    else if (mission == FIFTH) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface6);
     }
-    else if(mission == SIXTH) {
+    else if (mission == SIXTH) {
         spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface7);
     }
 }
@@ -93,17 +93,17 @@ void handleInputatHelp() {
             int mouseY = event.button.y;
             if (mouseX > realhelpButtonRect.x && mouseX < realhelpButtonRect.x + realhelpButtonRect.w &&
                 mouseY > realhelpButtonRect.y && mouseY < realhelpButtonRect.y + realhelpButtonRect.h) {
-               // changeColor(realhelpbutton, realhelpButtonRect);
-                
+                // changeColor(realhelpbutton, realhelpButtonRect);
+
                 gameState = REALHELP;
-                    
+
             }
             else if (mouseX > returnbackButton.x && mouseX < returnbackButton.x + returnbackButton.w &&
                 mouseY > returnbackButton.y && mouseY < returnbackButton.y + returnbackButton.h) {
                 changeColor(returnback, returnbackButton);
-                
-                    gameState = MENU;
-                }
+
+                gameState = MENU;
+            }
 
 
         }
@@ -125,7 +125,7 @@ void handleInputatMenu() {
             int mouseY = event.button.y;
             // 检查是否点击Play按钮
             if (mouseX > playButton.x && mouseX < playButton.x + playButton.w &&
-                mouseY > playButton.y && mouseY < playButton.y + playButton.h ) {
+                mouseY > playButton.y && mouseY < playButton.y + playButton.h) {
                 // 重置游戏状态来重新开始
                 changeColor(play, playButton);
                 resetGameState();
@@ -176,24 +176,25 @@ void handleInputatRealHelp() {
         {
             exit(0);
         }
-        else if (event.type == SDL_MOUSEBUTTONDOWN &&isPaused==false)
+        else if (event.type == SDL_MOUSEBUTTONDOWN && isPaused == false)
         {
             int mouseX = event.button.x;
             int mouseY = event.button.y;
-             if (mouseX > returnbackButton.x && mouseX < returnbackButton.x + returnbackButton.w &&
+            if (mouseX > returnbackButton.x && mouseX < returnbackButton.x + returnbackButton.w &&
                 mouseY > returnbackButton.y && mouseY < returnbackButton.y + returnbackButton.h) {
                 changeColor(returnback, returnbackButton);
-               
-                    gameState = MENU;
-                
+
+                gameState = MENU;
+
 
 
             }
-        }else if (event.type == SDL_KEYDOWN && isPaused == true)
+        }
+        else if (event.type == SDL_KEYDOWN && isPaused == true)
         {
-            
-            if (event.key.keysym.sym == SDLK_p ) {
-                
+
+            if (event.key.keysym.sym == SDLK_p) {
+
                 gameState = PLAYING;
                 isPaused = false;
             }
@@ -208,7 +209,7 @@ void handleInputatMap() {
         if (event.type == SDL_QUIT) {
             gameisRunning = false;
         }
-        
+
         if (event.type == SDL_KEYDOWN)
         {
             if (event.key.keysym.sym == SDLK_SPACE)
@@ -225,18 +226,18 @@ void handleInputatMap() {
 // Function to handle user input events
 void handleInput() {
     SDL_Event event;
-        Uint32 currentTime = SDL_GetTicks();
+    Uint32 currentTime = SDL_GetTicks();
 
-        // Calculate the time elapsed since the last key press
-        Uint32 elapsedTime = currentTime - lastKeyPressTime;
+    // Calculate the time elapsed since the last key press
+    Uint32 elapsedTime = currentTime - lastKeyPressTime;
 
-        // Set a cooldown period of 200 milliseconds (adjust as needed)
-        Uint32 cooldown = 500;
+    // Set a cooldown period of 200 milliseconds (adjust as needed)
+    Uint32 cooldown = 500;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             gameisRunning = false;
         }
-        else if(event.key.keysym.sym == SDLK_ESCAPE) {
+        else if (event.key.keysym.sym == SDLK_ESCAPE) {
             gameisRunning = false;
         }
         else if (event.type == SDL_MOUSEBUTTONDOWN && (isLosed || isPaused))
@@ -281,6 +282,13 @@ void handleInput() {
                     }
                     if (event.key.keysym.sym == SDLK_RIGHT) {
                         player.isMovingRight = true;
+                    }
+                    if (event.key.keysym.sym == SDLK_q) {
+                        // Perform action if cooldown has expired or it's a specific key
+                        if (elapsedTime >= cooldown-cooldown/2 || event.key.keysym.sym == SDLK_q) {
+                            player.isBlocking = true;
+                            lastKeyPressTime = currentTime; // Update the last key press time
+                        }
                     }
                     if (event.key.keysym.sym == SDLK_e) {
                         // Perform action if cooldown has expired or it's a specific key

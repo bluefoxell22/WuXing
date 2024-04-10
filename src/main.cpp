@@ -1,12 +1,12 @@
 #include "./combat.hpp"
 
-SDL_Rect collPlayer = {player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT};
-SDL_Rect collEnemy = {enemy.x, 0, ENEMY_WIDTH, ENEMY_HEIGHT};
+SDL_Rect collPlayer = { player.x, 0, PLAYER_WIDTH, PLAYER_HEIGHT };
+SDL_Rect collEnemy = { enemy.x, 0, ENEMY_WIDTH, ENEMY_HEIGHT };
 
 bool checkCollision(const Character& spriteA, const Enemy& spriteB) {
     // Calculate the bounding rectangles of the sprites
-    SDL_Rect rectA = {spriteA.x, spriteA.y, PLAYER_WIDTH - COLLISION_BUFFER, PLAYER_HEIGHT};
-    SDL_Rect rectB = {spriteB.x, spriteB.y, spriteB.enemyWidth, spriteB.enemyHeight+30};
+    SDL_Rect rectA = { spriteA.x, spriteA.y, PLAYER_WIDTH - COLLISION_BUFFER, PLAYER_HEIGHT };
+    SDL_Rect rectB = { spriteB.x, spriteB.y, spriteB.enemyWidth, spriteB.enemyHeight + 30 };
 
     // Check for collision using SDL's collision function
     return SDL_HasIntersection(&rectA, &rectB) == SDL_TRUE;
@@ -15,16 +15,16 @@ bool checkCollision(const Character& spriteA, const Enemy& spriteB) {
 // Function to update the player's position and state
 void updatePlayer() {
     // Update player's horizontal movement based on input
-    if (player.isMovingLeft && player.x >= -70){
+    if (player.isMovingLeft && player.x >= -70) {
         player.dx = -PLAYERSPEED;
     }
-    else if (player.isMovingRight && player.x < WINDOW_WIDTH - 190){
+    else if (player.isMovingRight && player.x < WINDOW_WIDTH - 190) {
         player.dx = PLAYERSPEED;
     }
-    else{
+    else {
         player.dx = 0;
     }
-    
+
     // Update player's position and apply gravity
     player.x += player.dx;
     player.x;
@@ -81,7 +81,7 @@ void updateEnemy()
 // Setting a timer for when the enemy start attacking
 Uint32 enemyBendingInterval(Uint32 interval, void* param) {
     timer = true;
-    if(enemy.bendingType == 1) {
+    if (enemy.bendingType == 1) {
         enemybend.bending = 1;
         enemybend.frame_number = 10;
         enemybend.frame_Y = 310;
@@ -145,31 +145,32 @@ Uint32 enemyBendingInterval(Uint32 interval, void* param) {
 }
 
 void checkWin() {
-    if(player.health < 10){
+    if (player.health < 10) {
         printf("You lose\n");
         isLosed = true;
-    }else if(enemy.health < 10) {
+    }
+    else if (enemy.health < 10) {
         printf("You win\n");
         isWin = true;
-        if(mission == ZERO) {
+        if (mission == ZERO) {
             mission = FIRST;
         }
-        else if(mission == FIRST) {
+        else if (mission == FIRST) {
             mission = SECOND;
         }
-        else if(mission == SECOND) {
+        else if (mission == SECOND) {
             mission = THIRD;
         }
-        else if(mission == THIRD) {
+        else if (mission == THIRD) {
             mission = FOURTH;
         }
-        else if(mission == FOURTH) {
+        else if (mission == FOURTH) {
             mission = FIFTH;
         }
-        else if(mission == FIFTH) {
+        else if (mission == FIFTH) {
             mission = SIXTH;
         }
-        else if(mission == SIXTH) {
+        else if (mission == SIXTH) {
             mission = SEVENTH;
         }
         else if (mission == SEVENTH) {
@@ -200,16 +201,16 @@ void checkWin() {
 }
 
 //  Main function where the game loop runs
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 
     setup();
-   // playVideo();
+    // playVideo();
     spriteSheet2 = SDL_CreateTextureFromSurface(renderer, enemySurface1);
     SDL_TimerID timerId = SDL_AddTimer(1500, enemyBendingInterval, nullptr);
     while (gameisRunning) {
         SDL_RenderClear(renderer);
-        if(checkCollision(player, enemy)) bounce();
-        if(wallCollision()) dont();
+        if (checkCollision(player, enemy)) bounce();
+        if (wallCollision()) dont();
 
         if (checkCollision(player, enemy)) {
             printf("collision!\n");
@@ -220,7 +221,7 @@ int main(int argc, char *argv[]) {
             renderMainMenu(renderer);
             handleInputatMenu();
         }
-        else if (gameState == HELP ) {
+        else if (gameState == HELP) {
             renderHelp(renderer);
             handleInputatHelp();
         }
@@ -233,13 +234,13 @@ int main(int argc, char *argv[]) {
             handleInputatSetting();
         }
         else if (gameState == PLAYING) {
-            
-             if (!isLosed && !isPaused && !isWin) {
+
+            if (!isLosed && !isPaused && !isWin) {
                 renderScene();        // Render background scene
                 updatePlayer(); // Update player state
                 updateEnemy();
                 renderPlayer(); // Render player character
-                bendingSkill(playerbend.bending,playerbend.texture);
+                bendingSkill(playerbend.bending, playerbend.texture);
                 enemybending();
                 renderEnemy(); // Render enemy character
             }
@@ -254,7 +255,7 @@ int main(int argc, char *argv[]) {
         }
         else if (gameState == MAP) {
             if (mission == FIRST) {
-                renderaMap(first,firstwin,second);
+                renderaMap(first, firstwin, second);
                 handleInputatMap();
             }
             else if (mission == SECOND) {

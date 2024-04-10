@@ -5,3 +5,4 @@ vendor
 MakeFile
 bin/debug/assets
 *.dll
+.editorconfig

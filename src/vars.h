@@ -1,9 +1,9 @@
-#include <SDL2/SDL.h>
 #include <iostream>
 #include <stdlib.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 // #include <SDL2/SDL_mixer.h>
-// #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <time.h>
 
 // Constants for screen dimensions and player attributes
@@ -20,7 +20,7 @@ const int NUM_FRAMES = 8; // Number of animation frames in the sprite sheet
 const int PLAYERSPEED = 6;
 const int ENEMYSPEED = 1;
 const int GRAVITY = 1;
-const char *filename = "./assets/main_menu.mp4";
+const char* filename = "./assets/main_menu.mp4";
 
 int ENEMY_WIDTH = 320;
 int ENEMY_HEIGHT = 320;
@@ -76,74 +76,74 @@ GameState gameState = MENU;
 int mission = ZERO;
 
 // SDL variables for window, renderer, and textures
-SDL_Surface *surfacePlayer = IMG_Load("./assets/sheet4.png");
-SDL_Surface *enemySurface1 = IMG_Load("./assets/enemySheet1.png");
-SDL_Surface *enemySurface2 = IMG_Load("./assets/enemySheet2.png");
-SDL_Surface *enemySurface3 = IMG_Load("./assets/enemySheet3.png");
-SDL_Surface *enemySurface4 = IMG_Load("./assets/enemySheet4.png");
-SDL_Surface *enemySurface5 = IMG_Load("./assets/enemySheet5.png");
-SDL_Surface *enemySurface6 = IMG_Load("./assets/enemySheet6.png");
-SDL_Surface *enemySurface7 = IMG_Load("./assets/enemySheet7.png");
-SDL_Surface *enemySurface8 = IMG_Load("./assets/enemySheet8.png");
+SDL_Surface* surfacePlayer = IMG_Load("./assets/sheet4.png");
+SDL_Surface* enemySurface1 = IMG_Load("./assets/enemySheet1.png");
+SDL_Surface* enemySurface2 = IMG_Load("./assets/enemySheet2.png");
+SDL_Surface* enemySurface3 = IMG_Load("./assets/enemySheet3.png");
+SDL_Surface* enemySurface4 = IMG_Load("./assets/enemySheet4.png");
+SDL_Surface* enemySurface5 = IMG_Load("./assets/enemySheet5.png");
+SDL_Surface* enemySurface6 = IMG_Load("./assets/enemySheet6.png");
+SDL_Surface* enemySurface7 = IMG_Load("./assets/enemySheet7.png");
+SDL_Surface* enemySurface8 = IMG_Load("./assets/enemySheet8.png");
 
 // SDL variables for window, renderer, and textures
-SDL_Window *window = nullptr;
-SDL_Renderer *renderer = nullptr;
-SDL_Texture *backgroundTexture = nullptr;
-SDL_Texture *spriteSheet1 = nullptr;
-SDL_Texture *spriteSheet2 = nullptr;
-SDL_Texture *fireSheet = nullptr;
-SDL_Texture *hpBar = nullptr;
-SDL_Texture *waterSheet = nullptr;
-SDL_Texture *earthSheet = nullptr;
-SDL_Texture *windSheet = nullptr;
-SDL_Texture *lightSheet = nullptr;
-SDL_Texture *firelightSheet = nullptr;
-SDL_Texture *waterlightSheet = nullptr;
-SDL_Texture *firewaterSheet = nullptr;
-SDL_Texture *videoTexture = nullptr;
-SDL_Texture *setting = nullptr;
-SDL_Texture *play = nullptr;
-SDL_Texture *help = nullptr;
-SDL_Texture *map = nullptr;
-SDL_Texture *returnback = nullptr;
-SDL_Texture *helpbackground = nullptr;
-SDL_Texture *settingbackground = nullptr;
-SDL_Texture *realhelp = nullptr;
-SDL_Texture *realhelpbutton = nullptr;
-SDL_Texture *first = nullptr;
-SDL_Texture *firstwin = nullptr;
-SDL_Texture *second = nullptr;
-SDL_Texture *secondwin = nullptr;
-SDL_Texture *third = nullptr;
-SDL_Texture *thirdwin = nullptr;
-SDL_Texture *fourth = nullptr;
-SDL_Texture *forthwin = nullptr;
-SDL_Texture *fifth = nullptr;
-SDL_Texture *fifthwin = nullptr;
-SDL_Texture *sixth = nullptr;
-SDL_Texture *sixthwin = nullptr;
-SDL_Texture *seventh = nullptr;
-SDL_Texture *seventhwin = nullptr;
-SDL_Texture *eight = nullptr;
-SDL_Texture *eightwin = nullptr;
-SDL_Texture *ninth = nullptr;
-SDL_Texture *ninthwin = nullptr;
-SDL_Texture *tenth = nullptr;
-SDL_Texture *tenthwin = nullptr;
-SDL_Texture *eleventh = nullptr;
-SDL_Texture *eleventhwin = nullptr;
-SDL_Texture *twelveth = nullptr;
-SDL_Texture *twelvethwin = nullptr;
-SDL_Texture *thirteenth = nullptr;
-SDL_Texture *thirteenthwin = nullptr;
-SDL_Texture *fourteenth = nullptr;
-SDL_Texture *fourteenthwin = nullptr;
-SDL_Texture *fifteenth = nullptr;
+SDL_Window* window = nullptr;
+SDL_Renderer* renderer = nullptr;
+SDL_Texture* backgroundTexture = nullptr;
+SDL_Texture* spriteSheet1 = nullptr;
+SDL_Texture* spriteSheet2 = nullptr;
+SDL_Texture* fireSheet = nullptr;
+SDL_Texture* hpBar = nullptr;
+SDL_Texture* waterSheet = nullptr;
+SDL_Texture* earthSheet = nullptr;
+SDL_Texture* windSheet = nullptr;
+SDL_Texture* lightSheet = nullptr;
+SDL_Texture* firelightSheet = nullptr;
+SDL_Texture* waterlightSheet = nullptr;
+SDL_Texture* firewaterSheet = nullptr;
+SDL_Texture* videoTexture = nullptr;
+SDL_Texture* setting = nullptr;
+SDL_Texture* play = nullptr;
+SDL_Texture* help = nullptr;
+SDL_Texture* map = nullptr;
+SDL_Texture* returnback = nullptr;
+SDL_Texture* helpbackground = nullptr;
+SDL_Texture* settingbackground = nullptr;
+SDL_Texture* realhelp = nullptr;
+SDL_Texture* realhelpbutton = nullptr;
+SDL_Texture* first = nullptr;
+SDL_Texture* firstwin = nullptr;
+SDL_Texture* second = nullptr;
+SDL_Texture* secondwin = nullptr;
+SDL_Texture* third = nullptr;
+SDL_Texture* thirdwin = nullptr;
+SDL_Texture* fourth = nullptr;
+SDL_Texture* forthwin = nullptr;
+SDL_Texture* fifth = nullptr;
+SDL_Texture* fifthwin = nullptr;
+SDL_Texture* sixth = nullptr;
+SDL_Texture* sixthwin = nullptr;
+SDL_Texture* seventh = nullptr;
+SDL_Texture* seventhwin = nullptr;
+SDL_Texture* eight = nullptr;
+SDL_Texture* eightwin = nullptr;
+SDL_Texture* ninth = nullptr;
+SDL_Texture* ninthwin = nullptr;
+SDL_Texture* tenth = nullptr;
+SDL_Texture* tenthwin = nullptr;
+SDL_Texture* eleventh = nullptr;
+SDL_Texture* eleventhwin = nullptr;
+SDL_Texture* twelveth = nullptr;
+SDL_Texture* twelvethwin = nullptr;
+SDL_Texture* thirteenth = nullptr;
+SDL_Texture* thirteenthwin = nullptr;
+SDL_Texture* fourteenth = nullptr;
+SDL_Texture* fourteenthwin = nullptr;
+SDL_Texture* fifteenth = nullptr;
 
-SDL_Texture *youwin = nullptr;
-SDL_Texture *logoTexture = nullptr;
-SDL_Texture *heartTexture = nullptr;
+SDL_Texture* youwin = nullptr;
+SDL_Texture* logoTexture = nullptr;
+SDL_Texture* heartTexture = nullptr;
 
 // Struct to represent the player with various attributes
 struct Character
@@ -156,6 +156,7 @@ struct Character
     int jumpCount;      // amount of jumps done in succession in one instance
     int health;         // health points of character
     bool playerAttack;
+    bool isBlocking;
 };
 
 struct Enemy
@@ -187,22 +188,22 @@ struct Bending
     int frame_Y;
     int v1;
     int v2;
-    SDL_Texture *texture;
+    SDL_Texture* texture;
 };
 
-Character player = {100, 100, 0, 0, false, false, false, 0, 100, false}; // Initialize the player object
-Enemy enemy = {500, 310, 0, 0, false, false, false, 0, 100, false, 1, 130, 128, 8, 4, 2};
+Character player = { 100, 100, 0, 0, false, false, false, 0, 100, false }; // Initialize the player object
+Enemy enemy = { 500, 310, 0, 0, false, false, false, 0, 100, false, 1, 130, 128, 8, 4, 2 };
 
-Bending playerbend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
-Bending enemybend = {0, 53, 53, 10, false, 1, 110, 125, 125, nullptr};
+Bending playerbend = { 0, 53, 53, 10, false, 1, 110, 125, 125, nullptr };
+Bending enemybend = { 0, 53, 53, 10, false, 1, 110, 125, 125, nullptr };
 
-SDL_Rect playButton = {400, 360, 280, 60};
-SDL_Rect logoRect = {(WINDOW_WIDTH - 260) / 2, 10, 260, 260};
-SDL_Rect heartRect1 = {0, 0, 65, 65};
-SDL_Rect heartRect2 = {650, 0, 65, 65};
-SDL_Rect helpButton = {(WINDOW_WIDTH - 280) / 2, 465, 280, 60};
-SDL_Rect settingrButton = {(WINDOW_WIDTH - 280) / 2, 570, 280, 60};
-SDL_Rect returnbackButton = {WINDOW_WIDTH - 200, 10, 120, 120};
-SDL_Rect youwinRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-SDL_Rect rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-SDL_Rect realhelpButtonRect = {WINDOW_WIDTH - 200, 470, 180, 70};
+SDL_Rect playButton = { 400, 360, 280, 60 };
+SDL_Rect logoRect = { (WINDOW_WIDTH - 260) / 2, 10, 260, 260 };
+SDL_Rect heartRect1 = { 0, 0, 65, 65 };
+SDL_Rect heartRect2 = { 650, 0, 65, 65 };
+SDL_Rect helpButton = { (WINDOW_WIDTH - 280) / 2, 465, 280, 60 };
+SDL_Rect settingrButton = { (WINDOW_WIDTH - 280) / 2, 570, 280, 60 };
+SDL_Rect returnbackButton = { WINDOW_WIDTH - 200, 10, 120, 120 };
+SDL_Rect youwinRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+SDL_Rect rect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+SDL_Rect realhelpButtonRect = { WINDOW_WIDTH - 200, 470, 180, 70 };

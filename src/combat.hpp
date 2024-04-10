@@ -8,11 +8,12 @@ void enemyAttack();
 void playerAttack();
 
 bool enemyCollisionBending(SDL_Rect dstattack, SDL_Rect srcattack, int dir) {
-    if(dir == 1){
-        if(dstattack.x <= player.x + PLAYER_WIDTH/2 && player.y+PLAYER_HEIGHT >= dstattack.y+srcattack.h){
-                return true;
+    if (dir == 1) {
+        if (dstattack.x <= player.x + PLAYER_WIDTH / 2 && player.y + PLAYER_HEIGHT >= dstattack.y + srcattack.h) {
+            return true;
         }
-    }else if((dstattack.x + srcattack.w >= dstattack.x && dstattack.x + srcattack.w >= player.x) && player.y+PLAYER_HEIGHT >= dstattack.y+srcattack.h && dir ==2) {
+    }
+    else if ((dstattack.x + srcattack.w >= dstattack.x && dstattack.x + srcattack.w >= player.x) && player.y + PLAYER_HEIGHT >= dstattack.y + srcattack.h && dir == 2) {
         return true;
     }
     // No collision
@@ -20,10 +21,10 @@ bool enemyCollisionBending(SDL_Rect dstattack, SDL_Rect srcattack, int dir) {
 }
 
 bool wallCollision() {
-    if(player.x >= WINDOW_WIDTH - 190){
+    if (player.x >= WINDOW_WIDTH - 190) {
         return true;
     }
-    else if(player.x <= -70) {
+    else if (player.x <= -70) {
         return true;
     }
     // No collision
@@ -48,9 +49,9 @@ int enemybending() {
 
     int elapsedTicks = static_cast<int>(deltaTime * 1000); // Convert deltaTime to milliseconds
     int frameIndex = (elapsedTicks / enemybend.v1) % enemybend.frame_number;
-    SDL_Rect bend = {frameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height}; // Calculate the source rectangle using the elapsed time
+    SDL_Rect bend = { frameIndex * enemybend.frame_width, enemybend.frame_Y, enemybend.frame_width, enemybend.frame_height }; // Calculate the source rectangle using the elapsed time
     int totalX = initialX + ((initialDir == 2) ? enemybend.frame_width / 2 : -enemybend.frame_width / 2) * (elapsedTicks / enemybend.v2);
-    SDL_Rect dstRect = {totalX, initialY, 272, 170}; // Use initialY as the y-coordinate
+    SDL_Rect dstRect = { totalX, initialY, 272, 170 }; // Use initialY as the y-coordinate
 
     if (timer) {
         if (enemyCollisionBending(dstRect, bend, initialDir)) {
@@ -72,10 +73,12 @@ int enemybending() {
         }
         if (initialDir == enemybend.inverseDir) {
             SDL_RenderCopyEx(renderer, enemybend.texture, &bend, &dstRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-        } else {
+        }
+        else {
             SDL_RenderCopy(renderer, enemybend.texture, &bend, &dstRect);
         }
-    } else {
+    }
+    else {
         initialX = enemy.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
         initialDir = enemyDir;
         enemy.rowNum = 2;
@@ -92,7 +95,8 @@ bool playerCollisionBending(SDL_Rect dstattack, SDL_Rect enemy, int dir) {
         if (dstattack.x + dstattack.w >= enemy.x + ENEMY_WIDTH) {
             return true;
         }
-    } else {
+    }
+    else {
         if (dstattack.x <= enemy.x + ENEMY_WIDTH && dstattack.x + dstattack.w >= enemy.x) {
             return true;
         }
@@ -131,13 +135,15 @@ int bendingSkill(int& bending, SDL_Texture* texture) {
 
         if (initialDir == playerbend.inverseDir) {
             SDL_RenderCopyEx(renderer, texture, &bend, &dstRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-        } else {
+        }
+        else {
             SDL_RenderCopy(renderer, texture, &bend, &dstRect);
         }
 
         // Present the rendered frame on the screen
         SDL_RenderPresent(renderer);
-    } else {
+    }
+    else {
         initialX = player.x + ((initialDir == 2) ? 200 : -200); // Reset initialX when bending is finished
         initialY = player.y + 96; // Keep initialY the same when bending is finished
         initialDir = playerDir;
@@ -147,7 +153,7 @@ int bendingSkill(int& bending, SDL_Texture* texture) {
     return 0;
 }
 
-void setPlayerBendProperties(SDL_Texture &texture, int frame_num, int frame_Y, int frame_width, int frame_height, int invDir, int v1, int v2) {
+void setPlayerBendProperties(SDL_Texture& texture, int frame_num, int frame_Y, int frame_width, int frame_height, int invDir, int v1, int v2) {
     playerbend.bending = 1;
     playerbend.texture = &texture;
     playerbend.frame_number = frame_num;
@@ -160,26 +166,24 @@ void setPlayerBendProperties(SDL_Texture &texture, int frame_num, int frame_Y, i
 }
 
 void enemyAttack() {
-    if(player.health > 1) {
+    if (player.health > 1 && !player.isBlocking) {
         player.health -= 8;
     }
-    else{
-        player.health = 1;
-    }
+    player.isBlocking = false;
 }
 
 void playerAttack() {
-    if(enemy.health >= 1) {
+    if (enemy.health >= 1) {
         enemy.health -= playerDamage;
     }
-    else{
+    else {
         enemy.health = 0;
     }
 }
 
 void bounce() {
     player.dx = 10;
-    player.dx = ((enemyDir == 1) ? -6: 6)*player.dx; // Reverse the player's velocity
+    player.dx = ((enemyDir == 1) ? -6 : 6) * player.dx; // Reverse the player's velocity
     player.x += player.dx;  // Update the player's position using the reversed velocity
 }
 
